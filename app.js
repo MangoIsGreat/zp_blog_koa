@@ -1,10 +1,17 @@
 const Koa = require("koa");
-const classic = require("./api/v1/classic");
-const book = require("./api/v1/book");
+const requireDirectory = require("require-directory");
+const Router = require("koa-router");
 
 const app = new Koa();
 
-app.use(classic.routes());
-app.use(book.routes());
+requireDirectory(module, "./api", {
+  visit: whenLoadModule,
+});
+
+function whenLoadModule(obj) {
+  if (obj instanceof Router) {
+    app.use(obj.routes());
+  }
+}
 
 app.listen(3000);
