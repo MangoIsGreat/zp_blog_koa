@@ -7,6 +7,13 @@ class InitManager {
     InitManager.app = app;
     InitManager.initLoadRouters();
     InitManager.loadHttpException(); // 程序启动时将所有的错误异常类挂载到global全局变量中
+    InitManager.loadConfig();
+  }
+
+  static loadConfig(path = "") {
+    const configPath = path || process.cwd() + "/config/config.js";
+    const config = require(configPath);
+    global.config = config;
   }
 
   static initLoadRouters() {
