@@ -6,6 +6,7 @@ class InitManager {
     // 入口方法：
     InitManager.app = app;
     InitManager.initLoadRouters();
+    InitManager.loadHttpException(); // 程序启动时将所有的错误异常类挂载到global全局变量中
   }
 
   static initLoadRouters() {
@@ -19,6 +20,11 @@ class InitManager {
         InitManager.app.use(obj.routes());
       }
     }
+  }
+
+  static loadHttpException() {
+    const errors = require("./http-exception");
+    global.errs = errors;
   }
 }
 
