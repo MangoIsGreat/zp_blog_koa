@@ -3,8 +3,8 @@ const router = new Router();
 
 const { PositiveIntegerValidator } = require("../../validators/validator.js");
 
-router.post("/v1/:id/classic/latest", (ctx, next) => {
-  const v = new PositiveIntegerValidator().validate(ctx);
+router.post("/v1/:id/classic/latest", async (ctx, next) => {
+  const v = await new PositiveIntegerValidator().validate(ctx);
 });
 
 module.exports = router;

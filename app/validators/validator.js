@@ -1,4 +1,5 @@
-const { LinValidator, Rule } = require("../../core/lin-validator");
+const { LinValidator, Rule } = require("../../core/lin-validator-v2");
+const { User } = require("../models/user");
 
 class PositiveIntegerValidator extends LinValidator {
   constructor() {
@@ -16,7 +17,11 @@ class RegisterValidator extends LinValidator {
         min: 6,
         max: 32,
       }),
-      new Rule("matches", "密码长度必须在6~22位之间，包含字符、数字或则 _", "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]"),
+      new Rule(
+        "matches",
+        "密码长度必须在6~22位之间，包含字符、数字或则 _",
+        "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]"
+      ),
     ];
     this.password2 = this.password1;
     this.nickname = [
@@ -32,6 +37,19 @@ class RegisterValidator extends LinValidator {
     const psw2 = vals.body.password2;
     if (psw1 !== psw2) {
       throw new Error("两个密码必须相同");
+    }
+  }
+
+  async validateEmail(vals) {
+    const email = vals.body.email;
+    const user = await User.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (user) {
+      throw new Error("email已存在");
     }
   }
 }
