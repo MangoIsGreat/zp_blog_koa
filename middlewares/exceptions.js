@@ -5,10 +5,12 @@ const catchError = async (ctx, next) => {
     await next();
   } catch (error) {
     // 开发环境直接抛出异常，方便定位异常代码：
-    if (global.config.environment === "dev") {
+    const isHttpException = error instanceof HttpException;
+    const isDev = global.config.environment === "dev";
+    if (isDev && !isHttpException) {
       throw error;
     }
-    
+
     if (error instanceof HttpException) {
       ctx.body = {
         msg: error.msg,
