@@ -8,7 +8,18 @@ const sequelize = new Sequelize(dbName, user, password, {
   port,
   logging: true,
   timezone: "+08:00",
-  define: {},
+  define: {
+    timestamps: true,
+    paranoid: true, // 软删除
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    underscored: true,
+  },
+});
+
+sequelize.sync({
+  force: false, // 配置修改则删除表重新创建
 });
 
 module.exports = {
