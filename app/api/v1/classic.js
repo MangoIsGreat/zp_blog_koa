@@ -5,7 +5,7 @@ const router = new Router({
 
 const { Auth } = require("../../../middlewares/auth");
 
-router.post("/latest", new Auth().m, async (ctx, next) => {
+router.post("/latest", new Auth(8).m, async (ctx, next) => {
   ctx.body = ctx.auth.uid;
 });
 
