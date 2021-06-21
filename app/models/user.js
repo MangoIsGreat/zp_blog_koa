@@ -42,6 +42,8 @@ User.init(
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
+      allowNull: false,
+      autoIncrement: true,
     },
     nickname: Sequelize.STRING,
     email: {
@@ -60,6 +62,12 @@ User.init(
       type: Sequelize.STRING(64),
       unique: true,
     },
+    auth_type: {
+      type: Sequelize.INTEGER,
+      defaultValue: 100, // 默认100(即“普通用户”)
+    },
+    profession: Sequelize.STRING(64),
+    signature: Sequelize.STRING,
   },
   {
     sequelize,

@@ -1,7 +1,7 @@
 module.exports = {
   environment: "dev",
   database: {
-    dbName: "island",
+    dbName: "zp_blog",
     host: "localhost",
     port: 3306,
     user: "root",
