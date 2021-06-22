@@ -39,6 +39,10 @@ Blog.init(
       type: Sequelize.STRING,
       allowNull: false,
     },
+    tag: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    }
   },
   {
     sequelize,

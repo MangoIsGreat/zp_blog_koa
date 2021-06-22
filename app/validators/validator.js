@@ -102,6 +102,12 @@ class BlogValidator extends LinValidator {
         min: 1,
       }),
     ];
+    this.tag = [
+      new Rule("isLength", "不允许为空", {
+        min: 1,
+      }),
+      new Rule('isInt', '需要是正整数', { min: 1 })
+    ];
   }
 }
 

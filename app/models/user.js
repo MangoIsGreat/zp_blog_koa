@@ -50,6 +50,9 @@ User.init(
       type: Sequelize.STRING(128),
       unique: true,
     },
+    avatar: {
+      type: Sequelize.STRING,
+    },
     password: {
       type: Sequelize.STRING,
       set(val) {

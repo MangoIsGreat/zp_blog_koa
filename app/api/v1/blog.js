@@ -13,6 +13,7 @@ router.post("/create", new Auth().m, async (ctx, next) => {
     title: v.get("body.title"),
     content: v.get("body.content"),
     description: v.get("body.description"),
+    tag: v.get("body.tag"),
     author: ctx.auth.uid,
   };
 
