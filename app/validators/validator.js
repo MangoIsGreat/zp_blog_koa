@@ -83,8 +83,31 @@ class TokenValidator extends LinValidator {
   }
 }
 
+class BlogValidator extends LinValidator {
+  constructor() {
+    super();
+    this.title = [
+      new Rule("isLength", "标题长度不符合规范", {
+        min: 1,
+        max: 30,
+      }),
+    ];
+    this.content = [
+      new Rule("isLength", "不允许为空", {
+        min: 1,
+      }),
+    ];
+    this.description = [
+      new Rule("isLength", "不允许为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
 module.exports = {
   PositiveIntegerValidator,
   RegisterValidator,
   TokenValidator,
+  BlogValidator,
 };
