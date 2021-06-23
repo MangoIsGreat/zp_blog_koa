@@ -52,6 +52,15 @@ class Forbidden extends HttpException {
   }
 }
 
+class ForbidOperate extends HttpException {
+  constructor(msg, errorCode) {
+    super();
+    this.msg = msg || "操作失败";
+    this.errorCode = errorCode || 10007;
+    this.code = 200;
+  }
+}
+
 module.exports = {
   HttpException,
   ParameterException,
@@ -59,4 +68,5 @@ module.exports = {
   NotFound,
   AuthFailed,
   Forbidden,
+  ForbidOperate,
 };

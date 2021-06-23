@@ -45,7 +45,15 @@ Blog.init(
     },
     titlePic: {
       type: Sequelize.STRING,
-    }
+    },
+    blogLikeNum: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+    },
+    blogReadNum: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+    },
   },
   {
     sequelize,

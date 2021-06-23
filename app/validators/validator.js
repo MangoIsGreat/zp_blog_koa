@@ -123,10 +123,34 @@ class DynamicValidator extends LinValidator {
   }
 }
 
+class DLikeValidator extends LinValidator {
+  constructor() {
+    super();
+    this.dynamic = [
+      new Rule("isLength", "动态ID号不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
+class BLikeValidator extends LinValidator {
+  constructor() {
+    super();
+    this.blog = [
+      new Rule("isLength", "博客ID号不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
 module.exports = {
   PositiveIntegerValidator,
   RegisterValidator,
   TokenValidator,
   BlogValidator,
   DynamicValidator,
+  DLikeValidator,
+  BLikeValidator,
 };

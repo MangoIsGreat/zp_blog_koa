@@ -7,6 +7,7 @@ const router = new Router({
   prefix: "/v1/dynamic",
 });
 
+// 创建动态
 router.post("/create", new Auth().m, async (ctx, next) => {
   const v = await new DynamicValidator().validate(ctx);
   const content = {
@@ -20,6 +21,7 @@ router.post("/create", new Auth().m, async (ctx, next) => {
   success();
 });
 
+// 获取动态列表
 router.get("/list", async (ctx, next) => {
   const dynamicList = await Dynamic.getDynamicList();
 
