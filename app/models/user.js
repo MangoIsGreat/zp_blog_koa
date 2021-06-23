@@ -69,8 +69,24 @@ User.init(
       type: Sequelize.INTEGER,
       defaultValue: 100, // 默认100(即“普通用户”)
     },
-    profession: Sequelize.STRING(64),
-    signature: Sequelize.STRING,
+    profession: Sequelize.STRING(64), // 职业
+    signature: Sequelize.STRING, // 签名
+    blogLikeNum: {
+      type: Sequelize.INTEGER ,
+      defaultValue: 0,
+    },
+    blogReadNum: {
+      type: Sequelize.INTEGER ,
+      defaultValue: 0,
+    },
+    fansNum: {
+      type: Sequelize.INTEGER ,
+      defaultValue: 0,
+    },
+    idolNum: {
+      type: Sequelize.INTEGER ,
+      defaultValue: 0,
+    },
   },
   {
     sequelize,

@@ -106,7 +106,19 @@ class BlogValidator extends LinValidator {
       new Rule("isLength", "不允许为空", {
         min: 1,
       }),
-      new Rule('isInt', '需要是正整数', { min: 1 })
+      new Rule("isInt", "需要是正整数", { min: 1 }),
+    ];
+  }
+}
+
+class DynamicValidator extends LinValidator {
+  constructor() {
+    super();
+    this.content = [
+      new Rule("isLength", "内容长度不符合规则！", {
+        min: 1,
+        max: 500,
+      }),
     ];
   }
 }
@@ -116,4 +128,5 @@ module.exports = {
   RegisterValidator,
   TokenValidator,
   BlogValidator,
+  DynamicValidator,
 };

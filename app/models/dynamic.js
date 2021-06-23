@@ -1,21 +1,21 @@
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 
-class Blog extends Model {
-  async createBlog(content) {
-    const blog = await Blog.create(content);
+class Dynamic extends Model {
+  async createDynamic(content) {
+    const dynamic = await Dynamic.create(content);
 
-    return blog;
+    return dynamic;
   }
 
-  static async getHomePageBlogList() {
-    const blogs = await Blog.findAll();
+  static async getDynamicList() {
+    const dynamic = await Dynamic.findAll();
 
-    return blogs;
+    return dynamic;
   }
 }
 
-Blog.init(
+Dynamic.init(
   {
     id: {
       type: Sequelize.UUID,
@@ -23,15 +23,10 @@ Blog.init(
       allowNull: false,
       defaultValue: Sequelize.UUIDV4,
     },
-    title: {
+    theme: {
       type: Sequelize.STRING,
-      allowNull: false,
     },
     content: {
-      type: Sequelize.TEXT,
-      allowNull: false,
-    },
-    description: {
       type: Sequelize.TEXT,
       allowNull: false,
     },
@@ -39,20 +34,21 @@ Blog.init(
       type: Sequelize.STRING,
       allowNull: false,
     },
-    tag: {
+    likeNum: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      defaultValue: 0,
     },
-    titlePic: {
-      type: Sequelize.STRING,
-    }
+    commNum: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+    },
   },
   {
     sequelize,
-    tableName: "blog",
+    tableName: "dynamic",
   }
 );
 
 module.exports = {
-  Blog,
+  Dynamic,
 };
