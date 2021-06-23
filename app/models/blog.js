@@ -9,7 +9,30 @@ class Blog extends Model {
   }
 
   static async getHomePageBlogList() {
-    const blogs = await Blog.findAll();
+    const blogs = await Blog.findAndCountAll();
+
+    return blogs;
+  }
+
+  async getRecomList(content) {
+    const blogs = await Blog.findAll({
+      where: {
+        tag: content.profession,
+      },
+      limit: 8,
+    });
+
+    return blogs;
+  }
+
+  async getHotList(content) {
+    const blogs = await Blog.findAll({
+      order: [["blogLikeNum", "DESC"]],
+      where: {
+        tag: content.profession,
+      },
+      limit: 5,
+    });
 
     return blogs;
   }

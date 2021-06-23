@@ -9,7 +9,17 @@ class Dynamic extends Model {
   }
 
   static async getDynamicList() {
-    const dynamic = await Dynamic.findAll();
+    const dynamic = await Dynamic.findAndCountAll();
+
+    return dynamic;
+  }
+
+  static async getFavDynamicList() {
+    // 获取精选“动态”
+    const dynamic = await Dynamic.findAll({
+      order: [["likeNum", "DESC"]],
+      limit: 3,
+    });
 
     return dynamic;
   }

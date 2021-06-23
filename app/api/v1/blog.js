@@ -2,7 +2,10 @@ const Router = require("koa-router");
 const { Blog } = require("../../models/blog");
 const { success } = require("../../lib/helper");
 const { Auth } = require("../../../middlewares/auth");
-const { BlogValidator } = require("../../validators/validator");
+const {
+  BlogValidator,
+  RecommendValidator,
+} = require("../../validators/validator");
 const router = new Router({
   prefix: "/v1/blog",
 });
@@ -29,7 +32,41 @@ router.get("/list", async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    list: blogList,
+    data: blogList,
+  };
+});
+
+// 相关推荐
+router.get("/recommend", async (ctx, next) => {
+  const v = await new RecommendValidator().validate(ctx);
+  const content = {
+    profession: v.get("query.profession"),
+  };
+
+  const recomBlogList = await new Blog().getRecomList(content);
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: recomBlogList,
+  };
+});
+
+// 热门文章
+router.get("/hot", async (ctx, next) => {
+  const v = await new RecommendValidator().validate(ctx);
+  const content = {
+    profession: v.get("query.profession"),
+  };
+
+  const hotBlogList = await new Blog().getHotList(content);
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: hotBlogList,
   };
 });
 

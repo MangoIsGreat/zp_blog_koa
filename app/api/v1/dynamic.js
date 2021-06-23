@@ -29,7 +29,19 @@ router.get("/list", async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    list: dynamicList,
+    data: dynamicList,
+  };
+});
+
+// 获取精选动态列表
+router.get("/favlist", async (ctx, next) => {
+  const dynamicList = await Dynamic.getFavDynamicList();
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: dynamicList,
   };
 });
 

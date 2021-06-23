@@ -145,6 +145,13 @@ class BLikeValidator extends LinValidator {
   }
 }
 
+class RecommendValidator extends LinValidator {
+  constructor() {
+    super();
+    this.profession = [new Rule("isInt", "需要是正整数", { min: 1 })];
+  }
+}
+
 module.exports = {
   PositiveIntegerValidator,
   RegisterValidator,
@@ -153,4 +160,5 @@ module.exports = {
   DynamicValidator,
   DLikeValidator,
   BLikeValidator,
+  RecommendValidator,
 };
