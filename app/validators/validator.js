@@ -13,7 +13,7 @@ class RegisterValidator extends LinValidator {
   constructor() {
     super();
     this.email = [new Rule("isEmail", "不符合Email规范")];
-    this.password1 = [
+    this.password = [
       new Rule("isLength", "密码至少6个字符，最多32个字符", {
         min: 6,
         max: 32,
@@ -24,7 +24,6 @@ class RegisterValidator extends LinValidator {
         "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]"
       ),
     ];
-    this.password2 = this.password1;
     this.nickname = [
       new Rule("isLength", "昵称不符合长度规范", {
         min: 4,
@@ -152,6 +151,25 @@ class RecommendValidator extends LinValidator {
   }
 }
 
+class AuthorRankingValidator extends LinValidator {
+  constructor() {
+    super();
+    this.profession = [new Rule("isOptional")];
+  }
+}
+
+// 文件上传
+class UploadValidator extends LinValidator {
+  constructor() {
+    super();
+    this.type = [
+      new Rule("isLength", "上传类型不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
 module.exports = {
   PositiveIntegerValidator,
   RegisterValidator,
@@ -161,4 +179,6 @@ module.exports = {
   DLikeValidator,
   BLikeValidator,
   RecommendValidator,
+  AuthorRankingValidator,
+  UploadValidator,
 };

@@ -35,6 +35,19 @@ class User extends Model {
       openid,
     });
   }
+
+  static async getUserRankList() {
+    return await User.findAll({
+      order: [["fansNum", "DESC"]],
+      limit: 3,
+    });
+  }
+
+  async getUserAllRankList() {
+    return await User.findAll({
+      order: [["fansNum", "DESC"]],
+    });
+  }
 }
 
 User.init(
@@ -72,19 +85,19 @@ User.init(
     profession: Sequelize.STRING(64), // 职业
     signature: Sequelize.STRING, // 签名
     blogLikeNum: {
-      type: Sequelize.INTEGER ,
+      type: Sequelize.INTEGER,
       defaultValue: 0,
     },
     blogReadNum: {
-      type: Sequelize.INTEGER ,
+      type: Sequelize.INTEGER,
       defaultValue: 0,
     },
     fansNum: {
-      type: Sequelize.INTEGER ,
+      type: Sequelize.INTEGER,
       defaultValue: 0,
     },
     idolNum: {
-      type: Sequelize.INTEGER ,
+      type: Sequelize.INTEGER,
       defaultValue: 0,
     },
   },

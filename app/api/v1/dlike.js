@@ -24,8 +24,6 @@ router.post("/like", new Auth().m, async (ctx, next) => {
 
   if (!result) {
     throw new global.errs.ForbidOperate("您已经点过赞了！");
-
-    return;
   }
 
   success();
