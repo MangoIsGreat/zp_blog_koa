@@ -17,7 +17,8 @@ router.post("/create", new Auth().m, async (ctx, next) => {
     content: v.get("body.content"),
     description: v.get("body.description"),
     tag: v.get("body.tag"),
-    author: "7d0c9e6c-f7eb-475f-88dc-e5eb5d91eacc",
+    cover_url: v.get("body.cover_url"),
+    author: ctx.auth.uid,
   };
 
   await new Blog().createBlog(content);

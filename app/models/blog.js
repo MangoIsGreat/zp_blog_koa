@@ -77,6 +77,9 @@ Blog.init(
       type: Sequelize.INTEGER,
       defaultValue: 0,
     },
+    cover_url: {
+      type: Sequelize.STRING,
+    },
   },
   {
     sequelize,

@@ -2,6 +2,13 @@ const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 
 class Tag extends Model {
+  static async getTagList() {
+    const tags = await Tag.findAndCountAll({
+      attributes: ["id", "tag_type", "tag_name"],
+    });
+
+    return tags;
+  }
 }
 
 Tag.init(
@@ -13,11 +20,11 @@ Tag.init(
       defaultValue: Sequelize.UUIDV4,
     },
     tagType: {
-        type: Sequelize.INTEGER,
+      type: Sequelize.INTEGER,
     },
     tagName: {
-        type: Sequelize.STRING,
-    }
+      type: Sequelize.STRING,
+    },
   },
   {
     sequelize,
@@ -26,5 +33,5 @@ Tag.init(
 );
 
 module.exports = {
-    Tag,
+  Tag,
 };

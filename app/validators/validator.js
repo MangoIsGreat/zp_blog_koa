@@ -96,11 +96,6 @@ class BlogValidator extends LinValidator {
         min: 1,
       }),
     ];
-    this.description = [
-      new Rule("isLength", "不允许为空", {
-        min: 1,
-      }),
-    ];
     this.tag = [
       new Rule("isLength", "不允许为空", {
         min: 1,
