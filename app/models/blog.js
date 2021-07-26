@@ -8,8 +8,8 @@ class Blog extends Model {
     return blog;
   }
 
-  static async getHomePageBlogList() {
-    const blogs = await Blog.findAndCountAll();
+  static async getHomePageBlogList(params) {
+    const blogs = await Blog.findAndCountAll(params);
 
     return blogs;
   }
@@ -77,7 +77,7 @@ Blog.init(
       type: Sequelize.INTEGER,
       defaultValue: 0,
     },
-    cover_url: {
+    titlePic: {
       type: Sequelize.STRING,
     },
   },

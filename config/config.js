@@ -1,5 +1,6 @@
 module.exports = {
   environment: "dev",
+  dev_host: "http://localhost:3001",
   database: {
     dbName: "zp_blog",
     host: "localhost",

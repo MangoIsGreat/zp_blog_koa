@@ -27,7 +27,15 @@ router.post("/create", new Auth().m, async (ctx, next) => {
 });
 
 router.get("/list", async (ctx, next) => {
-  const blogList = await Blog.getHomePageBlogList();
+  const params = {};
+  const query = ctx.query;
+
+  // 根据标签类型查找
+  if (query.tag) {
+    params["tag"] = query.tag * 1;
+  }
+
+  const blogList = await Blog.getHomePageBlogList({ where: params });
 
   ctx.body = {
     code: 200,

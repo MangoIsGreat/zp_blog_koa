@@ -19,9 +19,15 @@ router.post("/login", async (ctx) => {
   const v = await new TokenValidator().validate(ctx);
 
   let token;
+  let data;
   switch (v.get("body.type")) {
     case LoginType.USER_EMAIL:
       token = await emailLogin(v.get("body.account"), v.get("body.secret"));
+
+      if (!token) return;
+
+      data = await User.getUserInfo(v.get("body.account"));
+
       break;
     case LoginType.USER_MINI_PROGRAM:
       token = await WXManager.codeToToken(v.get("body.account"));
@@ -37,6 +43,7 @@ router.post("/login", async (ctx) => {
     msg: "ok",
     error_code: 0,
     token,
+    data,
   };
 });
 
@@ -47,6 +54,7 @@ router.post("/register", async (ctx) => {
     email: v.get("body.email"),
     password: v.get("body.password"),
     nickname: v.get("body.nickname"),
+    avatar: global.config.dev_host + "/default_avatar.png",
   };
 
   await User.create(user);

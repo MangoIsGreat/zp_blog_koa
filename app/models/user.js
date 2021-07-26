@@ -43,6 +43,13 @@ class User extends Model {
     });
   }
 
+  // 获取用户信息：
+  static async getUserInfo(account) {
+    return await User.findOne({
+      where: { email: account },
+    });
+  }
+
   async getUserAllRankList() {
     return await User.findAll({
       order: [["fansNum", "DESC"]],

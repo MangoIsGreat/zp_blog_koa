@@ -4,6 +4,7 @@ const { Sequelize, Model } = require("sequelize");
 class Tag extends Model {
   static async getTagList() {
     const tags = await Tag.findAndCountAll({
+      order: [["tag_type", "ASC"]],
       attributes: ["id", "tag_type", "tag_name"],
     });
 
