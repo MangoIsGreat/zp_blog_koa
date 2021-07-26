@@ -8,8 +8,16 @@ class Blog extends Model {
     return blog;
   }
 
-  static async getHomePageBlogList(params) {
-    const blogs = await Blog.findAndCountAll(params);
+  static async getHomePageBlogList({ where }, status) {
+    // 文章排序状态：
+    let ranking = "blogReadNum";
+
+    if (status === "new") ranking = "created_at";
+
+    const blogs = await Blog.findAndCountAll({
+      where,
+      order: [[ranking, "DESC"]],
+    });
 
     return blogs;
   }
@@ -32,6 +40,22 @@ class Blog extends Model {
         tag: content.profession,
       },
       limit: 5,
+    });
+
+    return blogs;
+  }
+
+  // 获取某一篇文章
+  static async getArticle(id) {
+    const blogs = await Blog.findOne({
+      where: {
+        id,
+      },
+    });
+
+    // 阅读数+1
+    blogs.increment(["blogReadNum"], { by: 1 }).then(function (user) {
+      console.log("success");
     });
 
     return blogs;
@@ -76,9 +100,6 @@ Blog.init(
     blogReadNum: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
-    },
-    titlePic: {
-      type: Sequelize.STRING,
     },
   },
   {

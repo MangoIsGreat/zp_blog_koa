@@ -17,7 +17,7 @@ router.post("/create", new Auth().m, async (ctx, next) => {
     content: v.get("body.content"),
     description: v.get("body.description"),
     tag: v.get("body.tag"),
-    cover_url: v.get("body.cover_url"),
+    titlePic: v.get("body.titlePic"),
     author: ctx.auth.uid,
   };
 
@@ -27,7 +27,7 @@ router.post("/create", new Auth().m, async (ctx, next) => {
 });
 
 router.get("/list", async (ctx, next) => {
-  const params = {};
+  let params = {};
   const query = ctx.query;
 
   // 根据标签类型查找
@@ -35,7 +35,13 @@ router.get("/list", async (ctx, next) => {
     params["tag"] = query.tag * 1;
   }
 
-  const blogList = await Blog.getHomePageBlogList({ where: params });
+  // 如果为推荐类型：
+  if (query.tag * 1 === 10000) params = null;
+
+  const blogList = await Blog.getHomePageBlogList(
+    { where: params },
+    query.rankingType
+  );
 
   ctx.body = {
     code: 200,
@@ -70,6 +76,18 @@ router.get("/hot", async (ctx, next) => {
   };
 
   const hotBlogList = await new Blog().getHotList(content);
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: hotBlogList,
+  };
+});
+
+// 获取某一篇文章
+router.get("/article", async (ctx, next) => {
+  const hotBlogList = await Blog.getArticle(ctx.query.id);
 
   ctx.body = {
     code: 200,
