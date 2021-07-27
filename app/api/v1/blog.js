@@ -10,6 +10,7 @@ const router = new Router({
   prefix: "/v1/blog",
 });
 
+// 创建博客
 router.post("/create", new Auth().m, async (ctx, next) => {
   const v = await new BlogValidator().validate(ctx);
   const content = {
@@ -26,6 +27,7 @@ router.post("/create", new Auth().m, async (ctx, next) => {
   success();
 });
 
+// 获取博客列表
 router.get("/list", async (ctx, next) => {
   let params = {};
   const { tag, rankingType, pageIndex, pageSize } = ctx.query;

@@ -17,6 +17,9 @@ Tag.init(
     followers: {
       type: Sequelize.STRING,
     },
+    isFollower: {
+      type: Sequelize.BOOLEAN,
+    },
   },
   {
     sequelize,

@@ -1,24 +1,60 @@
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
+const { User } = require("./user");
+const { Tag } = require("./tag");
 
 class Blog extends Model {
+  // 创建博客
   async createBlog(content) {
     const blog = await Blog.create(content);
 
     return blog;
   }
 
+  // 获取博客列表
   static async getHomePageBlogList({ where }, status, pageIndex, pageSize) {
     // 文章排序状态：
     let ranking = "blogReadNum";
 
     if (status === "new") ranking = "created_at";
 
+    // 多表查询(一对多)
+    Blog.belongsTo(User, {
+      foreignKey: "author",
+    });
+
+    Blog.belongsTo(Tag, {
+      foreignKey: "tag",
+      targetKey: "tagType",
+    });
+
     const blogs = await Blog.findAndCountAll({
       where,
       order: [[ranking, "DESC"]],
       offset: (pageIndex * 1 - 1) * pageSize,
       limit: pageSize * 1,
+      include: [
+        {
+          model: User,
+          attributes: ["nickname"],
+        },
+        {
+          model: Tag,
+          attributes: ["tagName"],
+        },
+      ],
+      attributes: [
+        "author",
+        "blogLikeNum",
+        "blogReadNum",
+        "created_at",
+        "description",
+        "id",
+        "tag",
+        "title",
+        "titlePic",
+        "updated_at",
+      ],
     });
 
     return blogs;

@@ -128,17 +128,6 @@ class DLikeValidator extends LinValidator {
   }
 }
 
-class BLikeValidator extends LinValidator {
-  constructor() {
-    super();
-    this.blog = [
-      new Rule("isLength", "博客ID号不能为空", {
-        min: 1,
-      }),
-    ];
-  }
-}
-
 class RecommendValidator extends LinValidator {
   constructor() {
     super();
@@ -172,7 +161,6 @@ module.exports = {
   BlogValidator,
   DynamicValidator,
   DLikeValidator,
-  BLikeValidator,
   RecommendValidator,
   AuthorRankingValidator,
   UploadValidator,
