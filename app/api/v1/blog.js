@@ -28,19 +28,21 @@ router.post("/create", new Auth().m, async (ctx, next) => {
 
 router.get("/list", async (ctx, next) => {
   let params = {};
-  const query = ctx.query;
+  const { tag, rankingType, pageIndex, pageSize } = ctx.query;
 
   // 根据标签类型查找
-  if (query.tag) {
-    params["tag"] = query.tag * 1;
+  if (tag) {
+    params["tag"] = tag * 1;
   }
 
   // 如果为推荐类型：
-  if (query.tag * 1 === 10000) params = null;
+  if (tag * 1 === 10000) params = null;
 
   const blogList = await Blog.getHomePageBlogList(
     { where: params },
-    query.rankingType
+    rankingType,
+    pageIndex,
+    pageSize
   );
 
   ctx.body = {

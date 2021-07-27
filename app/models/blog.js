@@ -8,7 +8,7 @@ class Blog extends Model {
     return blog;
   }
 
-  static async getHomePageBlogList({ where }, status) {
+  static async getHomePageBlogList({ where }, status, pageIndex, pageSize) {
     // 文章排序状态：
     let ranking = "blogReadNum";
 
@@ -17,6 +17,8 @@ class Blog extends Model {
     const blogs = await Blog.findAndCountAll({
       where,
       order: [[ranking, "DESC"]],
+      offset: (pageIndex * 1 - 1) * pageSize,
+      limit: pageSize * 1,
     });
 
     return blogs;
