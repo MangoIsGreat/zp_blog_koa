@@ -78,31 +78,33 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
   };
 });
 
-// 相关推荐
-router.get("/recommend", async (ctx, next) => {
+// 热门文章
+router.get("/hot", async (ctx, next) => {
   const v = await new RecommendValidator().validate(ctx);
   const content = {
-    profession: v.get("query.profession"),
+    blog: v.get("query.id"),
   };
 
-  const recomBlogList = await new Blog().getRecomList(content);
+  const hotBlogList = await Blog.getHotList(content);
 
   ctx.body = {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: recomBlogList,
+    data: hotBlogList,
   };
 });
 
-// 热门文章
-router.get("/hot", async (ctx, next) => {
+// 相关文章推荐
+router.get("/more", async (ctx, next) => {
   const v = await new RecommendValidator().validate(ctx);
   const content = {
-    profession: v.get("query.profession"),
+    blogID: v.get("query.id"),
+    pageIndex: v.get("query.pageIndex"),
+    pageSize: v.get("query.pageSize"),
   };
 
-  const hotBlogList = await new Blog().getHotList(content);
+  const hotBlogList = await Blog.relatedList(content);
 
   ctx.body = {
     code: 200,

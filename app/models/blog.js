@@ -16,7 +16,7 @@ class Blog extends Model {
     // 文章排序状态：
     let ranking = "blogReadNum";
 
-    if (status === "new") ranking = "created_at";
+    if (status === "new") ranking = "updated_at";
 
     // 多表查询(一对多)
     Blog.belongsTo(User, {
@@ -60,41 +60,129 @@ class Blog extends Model {
     return blogs;
   }
 
-  async getRecomList(content) {
-    const blogs = await Blog.findAll({
+  // 热门文章推荐
+  static async getHotList(content) {
+    const blog = await Blog.findOne({
       where: {
-        tag: content.profession,
+        id: content.blog,
       },
-      limit: 8,
     });
 
-    return blogs;
-  }
-
-  async getHotList(content) {
-    const blogs = await Blog.findAll({
+    const list = await Blog.findAndCountAll({
       order: [["blogLikeNum", "DESC"]],
       where: {
-        tag: content.profession,
+        tag: blog.tag,
       },
       limit: 5,
+      attributes: ["id", "title", "author", "tag", "blogLikeNum", "commentNum"],
     });
 
-    return blogs;
+    return list;
+  }
+
+  // 相关文章推荐
+  static async relatedList({ blogID, pageIndex, pageSize }) {
+    const blog = await Blog.findOne({
+      where: {
+        id: blogID,
+      },
+    });
+
+    // 多表查询(一对多)
+    Blog.belongsTo(User, {
+      foreignKey: "author",
+    });
+
+    Blog.belongsTo(Tag, {
+      foreignKey: "tag",
+      targetKey: "tagType",
+    });
+
+    const list = await Blog.findAndCountAll({
+      order: [["blogReadNum", "DESC"]],
+      where: {
+        tag: blog.tag,
+      },
+      offset: (pageIndex * 1 - 1) * pageSize,
+      limit: pageSize * 1,
+      include: [
+        {
+          model: User,
+          attributes: ["nickname"],
+        },
+        {
+          model: Tag,
+          attributes: ["tagName"],
+        },
+      ],
+      attributes: [
+        "id",
+        "title",
+        "author",
+        "tag",
+        "blogLikeNum",
+        "blogReadNum",
+        "commentNum",
+        "description",
+        "created_at",
+        "titlePic",
+      ],
+    });
+
+    return list;
   }
 
   // 获取某一篇文章
   static async getArticle(id) {
+    // 多表查询(一对多)
+    Blog.belongsTo(User, {
+      foreignKey: "author",
+    });
+
+    Blog.belongsTo(Tag, {
+      foreignKey: "tag",
+      targetKey: "tagType",
+    });
+
     const blogs = await Blog.findOne({
       where: {
         id,
       },
+      include: [
+        {
+          model: User,
+          attributes: [
+            "id",
+            "nickname",
+            "avatar",
+            "profession",
+            "signature",
+            "blogReadNum",
+            "blogLikeNum",
+            "fansNum",
+            "idolNum",
+          ],
+        },
+        {
+          model: Tag,
+          attributes: ["tagName", "id"],
+        },
+      ],
+      attributes: [
+        "id",
+        "title",
+        "content",
+        "author",
+        "titlePic",
+        "blogLikeNum",
+        "blogReadNum",
+        "created_at",
+        "updated_at",
+      ],
     });
 
     // 阅读数+1
-    blogs.increment(["blogReadNum"], { by: 1 }).then(function (user) {
-      console.log("success");
-    });
+    blogs.increment(["blogReadNum"], { by: 1 });
 
     return blogs;
   }
@@ -136,6 +224,10 @@ Blog.init(
       defaultValue: 0,
     },
     blogReadNum: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+    },
+    commentNum: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
     },

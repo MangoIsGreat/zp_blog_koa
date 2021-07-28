@@ -131,7 +131,11 @@ class DLikeValidator extends LinValidator {
 class RecommendValidator extends LinValidator {
   constructor() {
     super();
-    this.profession = [new Rule("isInt", "需要是正整数", { min: 1 })];
+    this.id = [
+      new Rule("isLength", "博客ID号不能为空", {
+        min: 1,
+      }),
+    ];
   }
 }
 
