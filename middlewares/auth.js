@@ -43,6 +43,35 @@ class Auth {
       await next();
     };
   }
+
+  get getUID() {
+    return async (ctx, next) => {
+      const userToken = basicAuth(ctx.req);
+
+      if (!userToken || !userToken.name) {
+        ctx.auth = null;
+
+        await next();
+
+        return;
+      }
+
+      try {
+        var decode = jwt.verify(
+          userToken.name,
+          global.config.security.secretKey
+        );
+      } catch (error) {
+        ctx.auth = null;
+      }
+
+      ctx.auth = {
+        uid: decode.uid,
+      };
+
+      await next();
+    };
+  }
 }
 
 module.exports = {

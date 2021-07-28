@@ -57,11 +57,16 @@ class BLike extends Model {
       return "ok";
     }
 
-    // await blog.increment("blogLikeNum", { by: 1 });
-
-    // const result = await BLike.create(content);
-
     return false;
+  }
+
+  // 获取所有点赞记录
+  static async getRecord(where) {
+    const records = await BLike.findAndCountAll({
+      where,
+    });
+
+    return records;
   }
 }
 
