@@ -3,7 +3,7 @@ const { Sequelize, Model } = require("sequelize");
 
 class Fans extends Model {}
 
-Tag.init(
+Fans.init(
   {
     id: {
       type: Sequelize.UUID,

@@ -158,6 +158,72 @@ class UploadValidator extends LinValidator {
   }
 }
 
+// 评论博客
+class BcommentValidator extends LinValidator {
+  constructor() {
+    super();
+    this.blog = [
+      new Rule("isLength", "博客ID号不能为空", {
+        min: 1,
+      }),
+    ];
+    this.content = [
+      new Rule("isLength", "评论内容不能为空", {
+        min: 1,
+      }),
+      // new Rule(
+      //   "matches",
+      //   "评论内容不能有非法字符",
+      //   `/[~!@#$%^&*()_+<>?:"{},.\/;'[\]]/im`
+      // ),
+    ];
+  }
+}
+
+// 回复"博客评论"
+class BReplyValidator extends LinValidator {
+  constructor() {
+    super();
+    this.blog = [
+      new Rule("isLength", "博客ID号不能为空", {
+        min: 1,
+      }),
+    ];
+    this.comment = [
+      new Rule("isLength", "评论ID号不能为空", {
+        min: 1,
+      }),
+    ];
+    this.toUid = [
+      new Rule("isLength", "目标用户id不能为空", {
+        min: 1,
+      }),
+    ];
+    this.content = [
+      new Rule("isLength", "评论内容不能为空", {
+        min: 1,
+      }),
+      // new Rule(
+      //   "matches",
+      //   "评论内容不能有非法字符",
+      //   `/[~!@#$%^&*()_+<>?:"{},.\/;'[\]]/im`
+      // ),
+    ];
+  }
+}
+
+// 评论博客
+class BcommentListValidator extends LinValidator {
+  constructor() {
+    super();
+    this.blog = [
+      new Rule("isLength", "博客ID号不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
 module.exports = {
   PositiveIntegerValidator,
   RegisterValidator,
@@ -168,4 +234,7 @@ module.exports = {
   RecommendValidator,
   AuthorRankingValidator,
   UploadValidator,
+  BcommentValidator,
+  BcommentListValidator,
+  BReplyValidator,
 };
