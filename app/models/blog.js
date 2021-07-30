@@ -164,12 +164,12 @@ class Blog extends Model {
     });
 
     // 查询文章的点赞状态
-    // const blogStatus = await BLike.findOne({
-    //   where: {
-    //     blog: blogId,
-    //     user: uid,
-    //   },
-    // });
+    const blogStatus = await sequelize.models.BLike.findOne({
+      where: {
+        blog: blogId,
+        user: uid,
+      },
+    });
 
     // 标记是否已建立“关注”关系
     let isAttention = false;
@@ -228,16 +228,16 @@ class Blog extends Model {
     blogs = JSON.parse(JSON.stringify(blogs));
 
     // 当前用户是否点赞该博客
-    // blogs.isLike = false;
+    blogs.isLike = false;
 
-    // if (blogStatus && blogStatus.isLike) {
-    //   blogs.isLike = true;
-    // }
+    if (blogStatus && blogStatus.isLike) {
+      blogs.isLike = true;
+    }
 
     // 是否已关注
-    // blogs.User.isAttention = isAttention;
+    blogs.User.isAttention = isAttention;
     // 是否作者是当前用户本人
-    // blogs.User.isSelf = isSelf;
+    blogs.User.isSelf = isSelf;
 
     return blogs;
   }

@@ -42,6 +42,10 @@ BReply.init(
       type: Sequelize.STRING, // 目标用户id
       allowNull: false,
     },
+    likeNum: {
+      type: Sequelize.INTEGER, // 被点赞数量
+      defaultValue: 0,
+    },
   },
   {
     sequelize,

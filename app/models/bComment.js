@@ -20,7 +20,7 @@ class BComment extends Model {
     let result = await BComment.findAll({
       order: [["created_at", "DESC"]],
       where: { blogId },
-      attributes: ["id", "blogId", "content", "created_at", "fromId"],
+      attributes: ["id", "blogId", "content", "created_at", "fromId", "likeNum"],
       include: [
         {
           model: sequelize.models.User,
@@ -87,6 +87,10 @@ BComment.init(
     fromId: {
       type: Sequelize.STRING, // 评论人id
       allowNull: false,
+    },
+    likeNum: {
+      type: Sequelize.INTEGER, // 被点赞数量
+      defaultValue: 0,
     },
   },
   {

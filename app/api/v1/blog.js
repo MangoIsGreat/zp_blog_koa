@@ -154,15 +154,6 @@ router.get("/article", new Auth().getUID, async (ctx, next) => {
 
   const hotBlogList = await Blog.getArticle(ctx.query.id, uid);
 
-  // const blogStatus = await BLike.findOne({
-  //   where: {
-  //     blog: ctx.query.id,
-  //     user: ctx.auth.uid,
-  //   },
-  // });
-
-  // console.log(blogStatus);
-
   ctx.body = {
     code: 200,
     error_code: 0,
