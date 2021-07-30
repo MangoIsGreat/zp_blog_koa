@@ -18,6 +18,7 @@ class BComment extends Model {
 
   static async getList({ blogId }) {
     let result = await BComment.findAll({
+      order: [["created_at", "DESC"]],
       where: { blogId },
       attributes: ["id", "blogId", "content", "created_at", "fromId"],
       include: [
@@ -54,6 +55,14 @@ class BComment extends Model {
 
       result[i].child = data;
     }
+
+    return result;
+  }
+
+  static async getCommentList(blogId) {
+    const result = await BComment.findAll({
+      where: { blogId },
+    });
 
     return result;
   }

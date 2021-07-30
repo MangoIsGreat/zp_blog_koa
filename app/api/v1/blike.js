@@ -5,9 +5,7 @@
  */
 const Router = require("koa-router");
 const { BLike } = require("../../models/blike");
-const { success } = require("../../lib/helper");
 const { Auth } = require("../../../middlewares/auth");
-// const { BLikeValidator } = require("../../validators/validator");
 const router = new Router({
   prefix: "/v1/blike",
 });
@@ -18,12 +16,6 @@ router.post("/like", new Auth().m, async (ctx, next) => {
     blog: ctx.request.body.blog,
     user: ctx.auth.uid,
   });
-
-  // if (!result) {
-  //   throw new global.errs.ForbidOperate("您已经点过赞了！");
-  // }
-
-  // success();
 
   ctx.body = {
     code: 200,

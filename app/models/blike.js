@@ -68,6 +68,15 @@ class BLike extends Model {
 
     return records;
   }
+
+  // 获取某用户的点赞情况
+  // static async getOneRecord(content) {
+  //   const record = await BLike.findOne({
+  //     where: content,
+  //   });
+
+  //   return record;
+  // }
 }
 
 BLike.init(

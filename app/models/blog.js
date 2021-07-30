@@ -2,6 +2,8 @@ const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 const { User } = require("./user");
 const { Tag } = require("./tag");
+const { Fans } = require("./fans");
+const { BLike } = require("./blike");
 
 class Blog extends Model {
   // 创建博客
@@ -133,7 +135,7 @@ class Blog extends Model {
   }
 
   // 获取某一篇文章
-  static async getArticle(id) {
+  static async getArticle(blogId, uid) {
     // 多表查询(一对多)
     Blog.belongsTo(User, {
       foreignKey: "author",
@@ -144,9 +146,48 @@ class Blog extends Model {
       targetKey: "tagType",
     });
 
-    const blogs = await Blog.findOne({
+    const blog = await Blog.findOne({
       where: {
-        id,
+        id: blogId,
+      },
+    });
+
+    // 获取博客的作者
+    const author = blog.author;
+
+    // 查看当前用户和博客作者是否已经建立“关注”关系
+    const attention = await Fans.findOne({
+      where: {
+        byFollowers: author,
+        followers: uid,
+      },
+    });
+
+    // 查询文章的点赞状态
+    // const blogStatus = await BLike.findOne({
+    //   where: {
+    //     blog: blogId,
+    //     user: uid,
+    //   },
+    // });
+
+    // 标记是否已建立“关注”关系
+    let isAttention = false;
+
+    if (attention && attention.isFollower) {
+      isAttention = true;
+    }
+
+    // 标记博客作者是不是当前用户自己
+    let isSelf = false;
+
+    if (author === uid) {
+      isSelf = true;
+    }
+
+    let blogs = await Blog.findOne({
+      where: {
+        id: blogId,
       },
       include: [
         {
@@ -183,6 +224,20 @@ class Blog extends Model {
 
     // 阅读数+1
     blogs.increment(["blogReadNum"], { by: 1 });
+
+    blogs = JSON.parse(JSON.stringify(blogs));
+
+    // 当前用户是否点赞该博客
+    // blogs.isLike = false;
+
+    // if (blogStatus && blogStatus.isLike) {
+    //   blogs.isLike = true;
+    // }
+
+    // 是否已关注
+    // blogs.User.isAttention = isAttention;
+    // 是否作者是当前用户本人
+    // blogs.User.isSelf = isSelf;
 
     return blogs;
   }

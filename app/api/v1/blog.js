@@ -1,6 +1,7 @@
 const Router = require("koa-router");
 const { Blog } = require("../../models/blog");
 const { BLike } = require("../../models/blike");
+const { BComment } = require("../../models/bComment");
 const { success } = require("../../lib/helper");
 const { Auth } = require("../../../middlewares/auth");
 const {
@@ -57,18 +58,22 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
 
   blogList = JSON.parse(JSON.stringify(blogList));
 
-  // 添加当前用户是否点赞的标记
-  blogList.rows.map((item) => {
-    item.isLike = false;
+  for (let i = 0; i < blogList.rows.length; i++) {
+    blogList.rows[i].isLike = false;
 
-    ctx.auth &&
-      ctx.auth.uid &&
-      records.rows.forEach((t) => {
-        if (item.id === t.blog) {
-          item.isLike = true;
+    // 添加评论数量的字段信息
+    const data = await BComment.getCommentList(blogList.rows[i].id);
+    blogList.rows[i].commentNum = data.length;
+
+    // 当前用户是否已经点赞该博客
+    if (ctx.auth && ctx.auth.uid) {
+      for (let j = 0; j < records.rows.length; j++) {
+        if (blogList.rows[i].id === records.rows[j].blog) {
+          blogList.rows[i].isLike = true;
         }
-      });
-  });
+      }
+    }
+  }
 
   ctx.body = {
     code: 200,
@@ -96,7 +101,7 @@ router.get("/hot", async (ctx, next) => {
 });
 
 // 相关文章推荐
-router.get("/more", async (ctx, next) => {
+router.get("/more", new Auth().getUID, async (ctx, next) => {
   const v = await new RecommendValidator().validate(ctx);
   const content = {
     blogID: v.get("query.id"),
@@ -104,19 +109,59 @@ router.get("/more", async (ctx, next) => {
     pageSize: v.get("query.pageSize"),
   };
 
-  const hotBlogList = await Blog.relatedList(content);
+  let blogList = await Blog.relatedList(content);
+
+  blogList = JSON.parse(JSON.stringify(blogList));
+
+  let records = null;
+  if (ctx.auth && ctx.auth.uid) {
+    records = await BLike.getRecord({ user: ctx.auth.uid });
+
+    records = JSON.parse(JSON.stringify(records));
+  }
+
+  for (let i = 0; i < blogList.rows.length; i++) {
+    blogList.rows[i].isLike = false;
+
+    // 添加评论数量的字段信息
+    const data = await BComment.getCommentList(blogList.rows[i].id);
+    blogList.rows[i].commentNum = data.length;
+
+    // 当前用户是否已经点赞该博客
+    if (ctx.auth && ctx.auth.uid) {
+      for (let j = 0; j < records.rows.length; j++) {
+        if (blogList.rows[i].id === records.rows[j].blog) {
+          blogList.rows[i].isLike = true;
+        }
+      }
+    }
+  }
 
   ctx.body = {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: hotBlogList,
+    data: blogList,
   };
 });
 
 // 获取某一篇文章
-router.get("/article", async (ctx, next) => {
-  const hotBlogList = await Blog.getArticle(ctx.query.id);
+router.get("/article", new Auth().getUID, async (ctx, next) => {
+  let uid = "";
+  if (ctx.auth && ctx.auth.uid) {
+    uid = ctx.auth.uid;
+  }
+
+  const hotBlogList = await Blog.getArticle(ctx.query.id, uid);
+
+  // const blogStatus = await BLike.findOne({
+  //   where: {
+  //     blog: ctx.query.id,
+  //     user: ctx.auth.uid,
+  //   },
+  // });
+
+  // console.log(blogStatus);
 
   ctx.body = {
     code: 200,
