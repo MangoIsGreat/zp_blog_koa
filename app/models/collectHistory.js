@@ -83,6 +83,9 @@ CollectHistory.init(
       type: Sequelize.STRING, // 用户Id
       allowNull: false,
     },
+    collectType: {
+      type: Sequelize.STRING, // 收藏集类型/名称
+    },
   },
   {
     sequelize,

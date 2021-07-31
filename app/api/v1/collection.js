@@ -55,6 +55,7 @@ router.post("/blog", new Auth().m, async (ctx, next) => {
     userId: ctx.auth.uid,
     blogId: v.get("body.blogId"),
     collectionId: v.get("body.collectionId"),
+    collectType: v.get("body.collectType"),
   });
 
   ctx.body = {

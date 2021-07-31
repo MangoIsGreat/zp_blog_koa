@@ -6,6 +6,7 @@
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 const { Blog } = require("./blog");
+const { User } = require("./user");
 
 class BLike extends Model {
   // 点赞博客功能：
@@ -20,9 +21,18 @@ class BLike extends Model {
       },
     });
 
+    // 获取用户信息
+    const user = await User.findOne({
+      where: {
+        id: blog.author,
+      },
+    });
+
     // 点赞记录存在&已点赞
     if (like && like.isLike) {
       await blog.decrement("blogLikeNum", { by: 1 });
+      // 博客作者被赞数-1
+      await user.decrement("blogLikeNum", { by: 1 });
 
       await BLike.update(
         { isLike: false },
@@ -35,6 +45,8 @@ class BLike extends Model {
     // 点赞记录存在&未点赞
     if (like && !like.isLike) {
       await blog.increment("blogLikeNum", { by: 1 });
+      // 博客作者被赞数+1
+      await user.increment("blogLikeNum", { by: 1 });
 
       await BLike.update(
         { isLike: true },
@@ -47,6 +59,8 @@ class BLike extends Model {
     // 未点过赞
     if (!like) {
       await blog.increment("blogLikeNum", { by: 1 });
+      // 博客作者被赞数+1
+      await user.increment("blogLikeNum", { by: 1 });
 
       await BLike.create({
         blog: content.blog,

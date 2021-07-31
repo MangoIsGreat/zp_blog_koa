@@ -225,6 +225,13 @@ class Blog extends Model {
     // 阅读数+1
     blogs.increment("blogReadNum", { by: 1 });
 
+    // 该博客作者被阅读数+1
+    const user = await User.findOne({
+      id: blogs.author,
+    });
+
+    user.increment("blogReadNum", { by: 1 });
+
     blogs = JSON.parse(JSON.stringify(blogs));
 
     // 当前用户是否点赞该博客

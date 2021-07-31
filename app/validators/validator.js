@@ -250,6 +250,11 @@ class CollectBlogValidator extends LinValidator {
         min: 1,
       }),
     ];
+    this.collectType = [
+      new Rule("isLength", "收藏集类型不能为空", {
+        min: 1,
+      }),
+    ];
   }
 }
 

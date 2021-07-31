@@ -84,13 +84,42 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
 });
 
 // 热门文章
-router.get("/hot", async (ctx, next) => {
+router.get("/hot", new Auth().getUID, async (ctx, next) => {
   const v = await new RecommendValidator().validate(ctx);
   const content = {
     blog: v.get("query.id"),
   };
 
-  const hotBlogList = await Blog.getHotList(content);
+  let hotBlogList = await Blog.getHotList(content);
+
+  hotBlogList = JSON.parse(JSON.stringify(hotBlogList));
+
+  let records = null;
+  if (ctx.auth && ctx.auth.uid) {
+    records = await BLike.getRecord({ user: ctx.auth.uid });
+
+    records = JSON.parse(JSON.stringify(records));
+  }
+
+  for (let i = 0; i < hotBlogList.rows.length; i++) {
+    hotBlogList.rows[i].isLike = false;
+
+    // 添加评论数量的字段信息
+    const data = await BComment.getCommentList(hotBlogList.rows[i].id);
+    hotBlogList.rows[i].commentNum = data.length;
+
+    // 当前用户是否已经点赞该博客
+    if (ctx.auth && ctx.auth.uid) {
+      for (let j = 0; j < records.rows.length; j++) {
+        if (
+          hotBlogList.rows[i].id === records.rows[j].blog &&
+          records.rows[j].isLike
+        ) {
+          hotBlogList.rows[i].isLike = true;
+        }
+      }
+    }
+  }
 
   ctx.body = {
     code: 200,
