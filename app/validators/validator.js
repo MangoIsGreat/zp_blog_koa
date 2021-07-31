@@ -224,6 +224,47 @@ class BcommentListValidator extends LinValidator {
   }
 }
 
+// 创建收藏集
+class CreateCollectionValidator extends LinValidator {
+  constructor() {
+    super();
+    this.type = [
+      new Rule("isLength", "收藏集名称不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
+// 收藏博客
+class CollectBlogValidator extends LinValidator {
+  constructor() {
+    super();
+    this.blogId = [
+      new Rule("isLength", "博客Id不能为空", {
+        min: 1,
+      }),
+    ];
+    this.collectionId = [
+      new Rule("isLength", "收藏集Id不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
+// 获取收藏集文章列表
+class CollectionListValidator extends LinValidator {
+  constructor() {
+    super();
+    this.collectionId = [
+      new Rule("isLength", "收藏集Id不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
 module.exports = {
   PositiveIntegerValidator,
   RegisterValidator,
@@ -237,4 +278,7 @@ module.exports = {
   BcommentValidator,
   BcommentListValidator,
   BReplyValidator,
+  CreateCollectionValidator,
+  CollectBlogValidator,
+  CollectionListValidator,
 };

@@ -3,7 +3,7 @@ const { Sequelize, Model } = require("sequelize");
 const { User } = require("./user");
 const { Tag } = require("./tag");
 const { Fans } = require("./fans");
-const { BLike } = require("./blike");
+const { CollectHistory } = require("./collectHistory");
 
 class Blog extends Model {
   // 创建博客
@@ -223,7 +223,7 @@ class Blog extends Model {
     });
 
     // 阅读数+1
-    blogs.increment(["blogReadNum"], { by: 1 });
+    blogs.increment("blogReadNum", { by: 1 });
 
     blogs = JSON.parse(JSON.stringify(blogs));
 
@@ -238,6 +238,22 @@ class Blog extends Model {
     blogs.User.isAttention = isAttention;
     // 是否作者是当前用户本人
     blogs.User.isSelf = isSelf;
+
+    // 标记当前用户是否已经收藏该文章
+    const collection = await CollectHistory.findOne({
+      where: {
+        blogId,
+        userId: uid,
+      },
+    });
+
+    let isCollect = false; // 当前用户是否收藏该文章默认false
+
+    if (collection) {
+      isCollect = true;
+    }
+
+    blogs.isCollect = isCollect;
 
     return blogs;
   }
