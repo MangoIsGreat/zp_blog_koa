@@ -10,7 +10,7 @@ const router = new Router({
   prefix: "/v1/blike",
 });
 
-// 点赞动态
+// 点赞博客
 router.post("/like", new Auth().m, async (ctx, next) => {
   const result = await BLike.likeBlog({
     blog: ctx.request.body.blog,

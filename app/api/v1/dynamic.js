@@ -13,6 +13,7 @@ router.post("/create", new Auth().m, async (ctx, next) => {
   const content = {
     theme: v.get("body.theme") || "",
     content: v.get("body.content"),
+    picUrl: v.get("body.picUrl"),
     author: ctx.auth.uid,
   };
 
@@ -22,8 +23,15 @@ router.post("/create", new Auth().m, async (ctx, next) => {
 });
 
 // 获取动态列表
-router.get("/list", async (ctx, next) => {
-  const dynamicList = await Dynamic.getDynamicList();
+router.get("/list", new Auth().getUID, async (ctx, next) => {
+  let dynamicList = null;
+  if (ctx.request.query.type !== "attention") {
+    // 如果“动态”类型不为“关注”
+    dynamicList = await Dynamic.getDynamicList(ctx.request.query);
+  } else {
+    // 如果“动态”类型为“关注”
+    dynamicList = await Dynamic.getAttentionDynamic(ctx.auth.uid);
+  }
 
   ctx.body = {
     code: 200,

@@ -227,7 +227,9 @@ class Blog extends Model {
 
     // 该博客作者被阅读数+1
     const user = await User.findOne({
-      id: blogs.author,
+      where: {
+        id: blogs.author,
+      },
     });
 
     user.increment("blogReadNum", { by: 1 });

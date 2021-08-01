@@ -23,6 +23,7 @@ app.use(
 // 处理静态资源
 app.use(koaStatic(path.join(__dirname, "./uploads/article")));
 app.use(koaStatic(path.join(__dirname, "./uploads/avatar")));
+app.use(koaStatic(path.join(__dirname, "./uploads/circle")));
 
 // 注册全局异常处理中间件：
 app.use(catchError);

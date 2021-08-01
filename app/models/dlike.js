@@ -1,33 +1,72 @@
 /**
  * author: zp
  * description: “动态”点赞功能
- * date: 2021/6/23
+ * date: 2021/8/1
  */
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 const { Dynamic } = require("./dynamic");
 
 class DLike extends Model {
-  async likeDynamic(content) {
+  // 点赞动态功能：
+  static async likeDynamic(content) {
     const like = await DLike.findOne({
       where: { dynamic: content.dynamic, user: content.user },
     });
 
-    if (like) {
-      return null;
-    }
-
-    const dyna = await Dynamic.findOne({
+    const dynamic = await Dynamic.findOne({
       where: {
         id: content.dynamic,
       },
     });
 
-    await dyna.increment("likeNum", { by: 1 });
+    // 点赞记录存在&已点赞
+    if (like && like.isLike) {
+      await dynamic.decrement("likeNum", { by: 1 });
 
-    const result = await DLike.create(content);
+      await DLike.update(
+        { isLike: false },
+        { where: { dynamic: content.dynamic, user: content.user } }
+      );
 
-    return result;
+      return "cancel";
+    }
+
+    // 点赞记录存在&未点赞
+    if (like && !like.isLike) {
+      await dynamic.increment("likeNum", { by: 1 });
+
+      await DLike.update(
+        { isLike: true },
+        { where: { dynamic: content.dynamic, user: content.user } }
+      );
+
+      return "ok";
+    }
+
+    // 未点过赞
+    if (!like) {
+      await dynamic.increment("likeNum", { by: 1 });
+
+      await DLike.create({
+        dynamic: content.dynamic,
+        user: content.user,
+        isLike: true,
+      });
+
+      return "ok";
+    }
+
+    return false;
+  }
+
+  // 获取所有点赞记录
+  static async getRecord(where) {
+    const records = await DLike.findAndCountAll({
+      where,
+    });
+
+    return records;
   }
 }
 
@@ -40,12 +79,15 @@ DLike.init(
       defaultValue: Sequelize.UUIDV4,
     },
     dynamic: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING, // 动态id
       allowNull: false,
     },
     user: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING, // 点赞用户
       allowNull: false,
+    },
+    isLike: {
+      type: Sequelize.BOOLEAN, // 点赞状态/是否点赞
     },
   },
   {

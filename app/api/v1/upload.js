@@ -21,10 +21,14 @@ router.post("/upload", new Auth().m, async (ctx, next) => {
 
   const fileName = randomString() + "." + name.split(".")[1];
 
-  const dirName =
-    v.get("body.type") === "article"
-      ? "../../../uploads/article"
-      : "../../../uploads/avatar";
+  let dirName = "";
+  if (v.get("body.type") === "article") {
+    dirName = "../../../uploads/article";
+  } else if (v.get("body.type") === "avatar") {
+    dirName = "../../../uploads/avatar";
+  } else if (v.get("body.type") === "circle") {
+    dirName = "../../../uploads/circle";
+  }
 
   const dest = path.join(__dirname, dirName, fileName); // 目标目录，没有没有这个文件夹会自动创建
   await fse.move(filePath, dest); // 移动文件

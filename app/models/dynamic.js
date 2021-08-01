@@ -1,5 +1,6 @@
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
+const { Fans } = require("./fans");
 
 class Dynamic extends Model {
   async createDynamic(content) {
@@ -8,10 +9,52 @@ class Dynamic extends Model {
     return dynamic;
   }
 
-  static async getDynamicList() {
-    const dynamic = await Dynamic.findAndCountAll();
+  // 获取动态列表
+  static async getDynamicList(query) {
+    // 排序的方式
+    let ranking = "created_at";
+    if (query.type === "hot") {
+      ranking = "likeNum";
+    }
+
+    const dynamic = await Dynamic.findAndCountAll({
+      order: [[ranking, "DESC"]],
+      limit: query.pageSize,
+      offset: (query.pageIndex - 1) * query.pageSize,
+      where: {
+        theme: query.theme,
+      },
+    });
 
     return dynamic;
+  }
+
+  // 获取关注人动态列表
+  static async getAttentionDynamic(uid) {
+    const idols = await Fans.findAll({
+      where: {
+        followers: uid,
+        isFollower: true,
+      },
+    });
+
+    // 获取的动态
+    const dynamics = [];
+    for (let i = 0; i < idols.length; i++) {
+      const dyns = await Dynamic.findAll({
+        where: {
+          author: idols[i].byFollowers,
+        },
+      });
+
+      dynamics.push([...dyns]);
+    }
+
+    dynamics.sort(function (a, b) {
+      return b.created_at - a.created_at;
+    });
+
+    return dynamics;
   }
 
   static async getFavDynamicList() {
@@ -51,6 +94,9 @@ Dynamic.init(
     commNum: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
+    },
+    picUrl: {
+      type: Sequelize.STRING,
     },
   },
   {

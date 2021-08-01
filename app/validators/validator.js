@@ -171,11 +171,6 @@ class BcommentValidator extends LinValidator {
       new Rule("isLength", "评论内容不能为空", {
         min: 1,
       }),
-      // new Rule(
-      //   "matches",
-      //   "评论内容不能有非法字符",
-      //   `/[~!@#$%^&*()_+<>?:"{},.\/;'[\]]/im`
-      // ),
     ];
   }
 }
@@ -203,11 +198,6 @@ class BReplyValidator extends LinValidator {
       new Rule("isLength", "评论内容不能为空", {
         min: 1,
       }),
-      // new Rule(
-      //   "matches",
-      //   "评论内容不能有非法字符",
-      //   `/[~!@#$%^&*()_+<>?:"{},.\/;'[\]]/im`
-      // ),
     ];
   }
 }
@@ -218,6 +208,62 @@ class BcommentListValidator extends LinValidator {
     super();
     this.blog = [
       new Rule("isLength", "博客ID号不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
+// 评论动态
+class DcommentValidator extends LinValidator {
+  constructor() {
+    super();
+    this.dynamic = [
+      new Rule("isLength", "动态ID号不能为空", {
+        min: 1,
+      }),
+    ];
+    this.content = [
+      new Rule("isLength", "评论内容不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
+// 回复"动态评论"
+class DReplyValidator extends LinValidator {
+  constructor() {
+    super();
+    this.dynamic = [
+      new Rule("isLength", "动态ID号不能为空", {
+        min: 1,
+      }),
+    ];
+    this.comment = [
+      new Rule("isLength", "评论ID号不能为空", {
+        min: 1,
+      }),
+    ];
+    this.toUid = [
+      new Rule("isLength", "目标用户id不能为空", {
+        min: 1,
+      }),
+    ];
+    this.content = [
+      new Rule("isLength", "评论内容不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
+// 评论动态
+class DcommentListValidator extends LinValidator {
+  constructor() {
+    super();
+    this.dynamic = [
+      new Rule("isLength", "动态ID号不能为空", {
         min: 1,
       }),
     ];
@@ -286,4 +332,7 @@ module.exports = {
   CreateCollectionValidator,
   CollectBlogValidator,
   CollectionListValidator,
+  DcommentValidator,
+  DReplyValidator,
+  DcommentListValidator,
 };
