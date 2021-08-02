@@ -31,7 +31,7 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
     // 如果“动态”类型不为“关注”
     dynamicList = await Dynamic.getDynamicList(ctx.request.query);
   } else if (
-    ctx.request.query.type !== "attention" &&
+    ctx.request.query.type === "attention" &&
     ctx.auth &&
     ctx.auth.uid
   ) {

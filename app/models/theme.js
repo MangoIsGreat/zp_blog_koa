@@ -6,7 +6,19 @@
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 
-class Theme extends Model {}
+class Theme extends Model {
+  // 创建动态类型
+  static async createTheme(content) {
+    await Theme.create(content);
+  }
+
+  // 获取“动态”类型列表
+  static async getThemeList() {
+    return await Theme.findAll({
+      attributes: ["id", "themeName", "created_at", "updated_at"],
+    });
+  }
+}
 
 Theme.init(
   {

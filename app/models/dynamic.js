@@ -40,7 +40,7 @@ class Dynamic extends Model {
 
   // 获取关注人动态列表
   static async getAttentionDynamic(content) {
-    const idols = await Fans.findAll({
+    let idols = await Fans.findAll({
       where: {
         followers: content.uid,
         isFollower: true,
@@ -50,6 +50,7 @@ class Dynamic extends Model {
     // 获取的动态
     const dynamics = [];
     for (let i = 0; i < idols.length; i++) {
+      console.log(idols[i].byFollowers);
       const dyns = await Dynamic.findAll({
         order: [["created_at", "DESC"]],
         where: {
@@ -66,7 +67,7 @@ class Dynamic extends Model {
         offset: (Number(content.pageIndex) - 1) * Number(content.pageSize),
       });
 
-      dynamics.push([...dyns]);
+      dynamics.push(...dyns);
     }
 
     dynamics.sort(function (a, b) {
