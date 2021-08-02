@@ -37,12 +37,12 @@ router.post("/comment", new Auth().m, async (ctx, next) => {
   };
 });
 
-// 回复"博客评论"
+// 回复"动态评论"
 router.post("/reply", new Auth().m, async (ctx, next) => {
   const v = await new DReplyValidator().validate(ctx);
   const content = {
-    dynamicId: v.get("body.dynamic"),
-    commentId: v.get("body.comment"),
+    dynamicId: v.get("body.dynamicId"),
+    commentId: v.get("body.commentId"),
     content: v.get("body.content"),
     toUid: v.get("body.toUid"),
     fromUid: ctx.auth.uid,
@@ -58,11 +58,11 @@ router.post("/reply", new Auth().m, async (ctx, next) => {
   };
 });
 
-// 获取博客评论列表
+// 获取动态评论列表
 router.get("/list", new Auth().getUID, async (ctx, next) => {
   const v = await new DcommentListValidator().validate(ctx);
   const content = {
-    dynamicId: v.get("query.dynamic"),
+    dynamicId: v.get("query.dynamicId"),
   };
 
   // 评论列表
@@ -76,7 +76,7 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
     records = JSON.parse(JSON.stringify(records));
   }
 
-  // 博客评论回复记录
+  // 动态评论回复记录
   let replyRecord = null;
   if (ctx.auth && ctx.auth.uid) {
     replyRecord = await RDLike.getRecord({ userId: ctx.auth.uid });
@@ -102,7 +102,7 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
       }
     }
 
-    // 博客评论回复部分
+    // 动态评论回复部分
     for (let m = 0; m < result[i].child.length; m++) {
       result[i].child[m].isLike = false;
 

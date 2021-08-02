@@ -7,13 +7,26 @@ const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 const { User } = require("./user");
 const { DReply } = require("./dReply");
+const { Dynamic } = require("../models/dynamic");
 
 class DComment extends Model {
   // 评论博客
   static async comment(content) {
-    await DComment.create(content);
+    try {
+      await DComment.create(content);
 
-    return "评论成功";
+      const dynamic = await Dynamic.findOne({
+        where: {
+          id: content.dynamicId,
+        },
+      });
+
+      await dynamic.increment("commNum", { by: 1 });
+
+      return "ok";
+    } catch (error) {
+      return "error";
+    }
   }
 
   static async getList({ dynamicId }) {
@@ -31,7 +44,7 @@ class DComment extends Model {
       include: [
         {
           model: sequelize.models.User,
-          as: "comment",
+          as: "userInfo",
           attributes: ["nickname", "id", "avatar", "profession", "signature"],
         },
       ],
@@ -107,7 +120,7 @@ DComment.init(
 );
 
 sequelize.models.DComment.belongsTo(User, {
-  as: "comment",
+  as: "userInfo",
   foreignKey: "fromId",
 });
 

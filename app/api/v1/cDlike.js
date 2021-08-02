@@ -1,19 +1,19 @@
 /**
  * author: zp
- * description: “动态”点赞功能
- * date: 2021/8/1
+ * description: “动态评论”点赞功能(comment like)
+ * date: 2021/8/2
  */
 const Router = require("koa-router");
-const { DLike } = require("../../models/dlike");
+const { CDLike } = require("../../models/cDLike");
 const { Auth } = require("../../../middlewares/auth");
 const router = new Router({
-  prefix: "/v1/dlike",
+  prefix: "/v1/cDlike",
 });
 
-// 点赞动态
+// 点赞博客评论
 router.post("/like", new Auth().m, async (ctx, next) => {
-  const result = await DLike.likeDynamic({
-    dynamic: ctx.request.body.dynamicId,
+  const result = await CDLike.likeComment({
+    commentId: ctx.request.body.commentId,
     user: ctx.auth.uid,
   });
 

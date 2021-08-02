@@ -235,12 +235,12 @@ class DcommentValidator extends LinValidator {
 class DReplyValidator extends LinValidator {
   constructor() {
     super();
-    this.dynamic = [
+    this.dynamicId = [
       new Rule("isLength", "动态ID号不能为空", {
         min: 1,
       }),
     ];
-    this.comment = [
+    this.commentId = [
       new Rule("isLength", "评论ID号不能为空", {
         min: 1,
       }),
@@ -262,7 +262,7 @@ class DReplyValidator extends LinValidator {
 class DcommentListValidator extends LinValidator {
   constructor() {
     super();
-    this.dynamic = [
+    this.dynamicId = [
       new Rule("isLength", "动态ID号不能为空", {
         min: 1,
       }),
