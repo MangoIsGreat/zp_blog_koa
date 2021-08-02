@@ -15,7 +15,7 @@ class Theme extends Model {
   // 获取“动态”类型列表
   static async getThemeList() {
     return await Theme.findAll({
-      attributes: ["id", "themeName", "created_at", "updated_at"],
+      attributes: ["id", "themeName", "artNum", "created_at", "updated_at"],
     });
   }
 }
@@ -29,8 +29,12 @@ Theme.init(
       defaultValue: Sequelize.UUIDV4,
     },
     themeName: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING, // “动态”分类名称
       allowNull: false,
+    },
+    artNum: {
+      type: Sequelize.INTEGER, // 该分类文章数
+      defaultValue: 0,
     },
   },
   {

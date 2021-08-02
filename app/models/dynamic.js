@@ -2,11 +2,20 @@ const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 const { Fans } = require("./fans");
 const { User } = require("./user");
-const { DLike } = require("./dlike");
+const { Theme } = require("./theme");
 
 class Dynamic extends Model {
   async createDynamic(content) {
     const dynamic = await Dynamic.create(content);
+
+    // 创建成功则响应主题“动态数”+1
+    const theme = await Theme.findOne({
+      where: {
+        themeName: content.theme,
+      },
+    });
+
+    theme.increment("artNum", { by: 1 });
 
     return dynamic;
   }
