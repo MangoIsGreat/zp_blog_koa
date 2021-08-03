@@ -55,6 +55,23 @@ class User extends Model {
       order: [["fansNum", "DESC"]],
     });
   }
+
+  // 获取用户信息
+  static async getUserInfo(content) {
+    return await User.findOne({
+      where: content,
+      attributes: [
+        "nickname",
+        "avatar",
+        "profession",
+        "signature",
+        "blogLikeNum",
+        "blogReadNum",
+        "fansNum",
+        "idolNum",
+      ],
+    });
+  }
 }
 
 User.init(

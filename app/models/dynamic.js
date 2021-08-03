@@ -9,13 +9,18 @@ class Dynamic extends Model {
     const dynamic = await Dynamic.create(content);
 
     // 创建成功则响应主题“动态数”+1
-    const theme = await Theme.findOne({
-      where: {
-        themeName: content.theme,
-      },
-    });
+    let theme = null;
+    if (content.theme) {
+      theme = await Theme.findOne({
+        where: {
+          themeName: content.theme,
+        },
+      });
+    }
 
-    theme.increment("artNum", { by: 1 });
+    if (theme) {
+      theme.increment("artNum", { by: 1 });
+    }
 
     return dynamic;
   }
@@ -32,9 +37,11 @@ class Dynamic extends Model {
       order: [[ranking, "DESC"]],
       limit: Number(query.pageSize),
       offset: (Number(query.pageIndex) - 1) * Number(query.pageSize),
-      where: {
-        theme: query.theme,
-      },
+      where: query.theme
+        ? {
+            theme: query.theme,
+          }
+        : null,
       include: [
         {
           model: sequelize.models.User,

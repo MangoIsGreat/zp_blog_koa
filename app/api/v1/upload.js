@@ -14,7 +14,7 @@ const router = new Router({
   prefix: "/v1",
 });
 
-// 点赞动态
+// 上传文件
 router.post("/upload", new Auth().m, async (ctx, next) => {
   const v = await new UploadValidator().validate(ctx);
   const { name, path: filePath } = ctx.request.files["file"];

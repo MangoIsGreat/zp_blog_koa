@@ -85,6 +85,22 @@ router.get("/ranklist", async (ctx) => {
   };
 });
 
+// 获取用户信息
+router.get("/userInfo", new Auth().m, async (ctx) => {
+  const content = {
+    id: ctx.auth.uid,
+  };
+
+  const result = await User.findOne(content);
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: result,
+  };
+});
+
 async function emailLogin(account, secret) {
   const user = await User.verifyEmailPassword(account, secret);
   return (token = generateToken(user.id, Auth.USER));
