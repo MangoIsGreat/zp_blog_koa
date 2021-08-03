@@ -1,6 +1,6 @@
 /**
  * author: zp
- * description: 动态分类标签
+ * description: "动态"分类标签
  * date: 2021/8/2
  */
 const Router = require("koa-router");

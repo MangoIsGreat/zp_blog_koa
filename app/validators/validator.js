@@ -316,6 +316,42 @@ class CollectionListValidator extends LinValidator {
   }
 }
 
+// 创建资讯
+class NewsValidator extends LinValidator {
+  constructor() {
+    super();
+    this.title = [
+      new Rule("isLength", "标题长度不符合规范", {
+        min: 1,
+        max: 30,
+      }),
+    ];
+    this.content = [
+      new Rule("isLength", "不允许为空", {
+        min: 1,
+      }),
+    ];
+    this.newsType = [
+      new Rule("isLength", "不允许为空", {
+        min: 1,
+      }),
+      new Rule("isInt", "需要是正整数", { min: 1 }),
+    ];
+  }
+}
+
+// 热门资讯
+class RecommendNewsValidator extends LinValidator {
+  constructor() {
+    super();
+    this.newsId = [
+      new Rule("isLength", "资讯ID号不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
 module.exports = {
   PositiveIntegerValidator,
   RegisterValidator,
@@ -335,4 +371,6 @@ module.exports = {
   DcommentValidator,
   DReplyValidator,
   DcommentListValidator,
+  NewsValidator,
+  RecommendNewsValidator
 };

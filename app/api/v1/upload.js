@@ -1,6 +1,6 @@
 /**
  * author: zp
- * description: “动态”点赞功能
+ * description: 文件上传模块
  * date: 2021/6/23
  */
 const Router = require("koa-router");
@@ -28,6 +28,8 @@ router.post("/upload", new Auth().m, async (ctx, next) => {
     dirName = "../../../uploads/avatar";
   } else if (v.get("body.type") === "circle") {
     dirName = "../../../uploads/circle";
+  } else if (v.get("body.type") === "news") {
+    dirName = "../../../uploads/news";
   }
 
   const dest = path.join(__dirname, dirName, fileName); // 目标目录，没有没有这个文件夹会自动创建
