@@ -331,7 +331,7 @@ class NewsValidator extends LinValidator {
         min: 1,
       }),
     ];
-    this.newsType = [
+    this.tagType = [
       new Rule("isLength", "不允许为空", {
         min: 1,
       }),

@@ -19,7 +19,7 @@ router.post("/create", new Auth().m, async (ctx, next) => {
     title: v.get("body.title"),
     content: v.get("body.content"),
     description: v.get("body.description"),
-    tag: v.get("body.newsType"),
+    tag: v.get("body.tag"),
     titlePic: v.get("body.titlePic"),
     author: ctx.auth.uid,
   };
@@ -32,15 +32,15 @@ router.post("/create", new Auth().m, async (ctx, next) => {
 // 获取资讯列表
 router.get("/list", new Auth().getUID, async (ctx, next) => {
   let params = {};
-  const { newsType, rankingType, pageIndex, pageSize } = ctx.query;
+  const { tagType, rankingType, pageIndex, pageSize } = ctx.query;
 
   // 根据标签类型查找
-  if (newsType) {
-    params["tag"] = newsType * 1; //隐式类型转换
+  if (tagType) {
+    params["tag"] = tagType * 1; //隐式类型转换
   }
 
   // 如果为"全部"类型：
-  if (newsType * 1 === 20000) params = null;
+  if (tagType * 1 === 20000) params = null;
 
   let newsList = await News.getHomePageNewsList(
     { where: params },

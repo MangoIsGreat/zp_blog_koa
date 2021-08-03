@@ -42,7 +42,7 @@ class News extends Model {
         },
         {
           model: NewsType,
-          attributes: ["newsName"],
+          attributes: ["tagName"],
         },
       ],
       attributes: [
@@ -114,7 +114,7 @@ class News extends Model {
         },
         {
           model: NewsType,
-          attributes: ["newsName"],
+          attributes: ["tagName"],
         },
       ],
       attributes: [
@@ -204,7 +204,7 @@ class News extends Model {
         },
         {
           model: NewsType,
-          attributes: ["newsName", "id"],
+          attributes: ["tagName", "id"],
         },
       ],
       attributes: [
@@ -319,7 +319,7 @@ sequelize.models.News.belongsTo(User, {
 
 sequelize.models.News.belongsTo(NewsType, {
   foreignKey: "tag",
-  targetKey: "newsType",
+  targetKey: "tagType",
 });
 
 module.exports = {
