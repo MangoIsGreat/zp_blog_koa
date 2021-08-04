@@ -2,8 +2,6 @@ const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 const { User } = require("./user");
 const { NewsType } = require("./newsType");
-// const { Fans } = require("./fans");
-// const { CollectHistory } = require("./collectHistory");
 
 class News extends Model {
   // 创建资讯
@@ -19,16 +17,6 @@ class News extends Model {
     let ranking = "newsReadNum";
 
     if (status === "new") ranking = "created_at";
-
-    // 多表查询(一对多)
-    // News.belongsTo(User, {
-    //   foreignKey: "author",
-    // });
-
-    // News.belongsTo(Tag, {
-    //   foreignKey: "tag",
-    //   targetKey: "tagType",
-    // });
 
     const news = await News.findAndCountAll({
       where,
@@ -124,16 +112,6 @@ class News extends Model {
       },
     });
 
-    // 多表查询(一对多)
-    // News.belongsTo(User, {
-    //   foreignKey: "author",
-    // });
-
-    // News.belongsTo(Tag, {
-    //   foreignKey: "tag",
-    //   targetKey: "tagType",
-    // });
-
     const list = await News.findAndCountAll({
       order: [["newsReadNum", "DESC"]],
       where: {
@@ -169,53 +147,12 @@ class News extends Model {
 
   // 获取某一篇文章
   static async getNews(newsId, uid) {
-    // 多表查询(一对多)
-    // News.belongsTo(User, {
-    //   foreignKey: "author",
-    // });
-
-    // News.belongsTo(Tag, {
-    //   foreignKey: "tag",
-    //   targetKey: "tagType",
-    // });
-
-    // const news = await News.findOne({
-    //   where: {
-    //     id: newsId,
-    //   },
-    // });
-
-    // 获取博客的作者
-    // const author = news.author;
-
-    // 查看当前用户和博客作者是否已经建立“关注”关系
-    // const attention = await Fans.findOne({
-    //   where: {
-    //     byFollowers: author,
-    //     followers: uid,
-    //   },
-    // });
-
     const newsStatus = await sequelize.models.NewsLike.findOne({
       where: {
         newsId: newsId,
         user: uid,
       },
     });
-
-    // 标记是否已建立“关注”关系
-    // let isAttention = false;
-
-    // if (attention && attention.isFollower) {
-    //   isAttention = true;
-    // }
-
-    // 标记博客作者是不是当前用户自己
-    // let isSelf = false;
-
-    // if (author === uid) {
-    //   isSelf = true;
-    // }
 
     let newsItem = await News.findOne({
       where: {
@@ -255,15 +192,6 @@ class News extends Model {
     // 阅读数+1
     newsItem.increment("newsReadNum", { by: 1 });
 
-    // 该博客作者被阅读数+1
-    // const user = await User.findOne({
-    //   where: {
-    //     id: blogs.author,
-    //   },
-    // });
-
-    // user.increment("blogReadNum", { by: 1 });
-
     newsItem = JSON.parse(JSON.stringify(newsItem));
 
     // 当前用户是否点赞该博客
@@ -272,27 +200,6 @@ class News extends Model {
     if (newsStatus && newsStatus.isLike) {
       newsItem.isLike = true;
     }
-
-    // 是否已关注
-    // blogs.User.isAttention = isAttention;
-    // 是否作者是当前用户本人
-    // blogs.User.isSelf = isSelf;
-
-    // 标记当前用户是否已经收藏该文章
-    // const collection = await CollectHistory.findOne({
-    //   where: {
-    //     blogId,
-    //     userId: uid,
-    //   },
-    // });
-
-    // let isCollect = false; // 当前用户是否收藏该文章默认false
-
-    // if (collection) {
-    //   isCollect = true;
-    // }
-
-    // blogs.isCollect = isCollect;
 
     return newsItem;
   }

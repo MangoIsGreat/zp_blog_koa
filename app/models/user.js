@@ -72,6 +72,28 @@ class User extends Model {
       ],
     });
   }
+
+  // 获取“作者”排行
+  static async getAuthorRanking({ pageIndex, pageSize }) {
+    const result = await User.findAndCountAll({
+      order: [["blogReadNum", "DESC"]],
+      limit: Number(pageSize),
+      offset: (Number(pageIndex) - 1) * pageSize,
+      attributes: [
+        "id",
+        "nickname",
+        "avatar",
+        "profession",
+        "signature",
+        "blogLikeNum",
+        "blogReadNum",
+        "fansNum",
+        "idolNum",
+      ],
+    });
+
+    return result;
+  }
 }
 
 User.init(
