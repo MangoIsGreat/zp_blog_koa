@@ -22,11 +22,11 @@ class NewsLike extends Model {
     });
 
     // 获取用户信息
-    const user = await User.findOne({
-      where: {
-        id: news.author,
-      },
-    });
+    // const user = await User.findOne({
+    //   where: {
+    //     id: news.author,
+    //   },
+    // });
 
     // 点赞记录存在&已点赞
     if (like && like.isLike) {
@@ -62,7 +62,7 @@ class NewsLike extends Model {
       // 博客作者被赞数+1
       // await user.increment("blogLikeNum", { by: 1 });
 
-      await BLike.create({
+      await NewsLike.create({
         newsId: content.newsId,
         user: content.user,
         isLike: true,

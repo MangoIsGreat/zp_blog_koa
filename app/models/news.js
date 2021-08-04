@@ -18,7 +18,7 @@ class News extends Model {
     // 文章排序状态(默认按阅读量排序)：
     let ranking = "newsReadNum";
 
-    if (status === "new") ranking = "updated_at";
+    if (status === "new") ranking = "created_at";
 
     // 多表查询(一对多)
     // News.belongsTo(User, {
@@ -71,12 +71,46 @@ class News extends Model {
     });
 
     const list = await News.findAndCountAll({
-      order: [["newsLikeNum", "DESC"]],
+      order: [["newsReadNum", "DESC"]],
       where: {
         tag: news.tag,
       },
       limit: 5,
-      attributes: ["id", "title", "author", "tag", "newsLikeNum"],
+      attributes: [
+        "id",
+        "title",
+        "author",
+        "tag",
+        "newsLikeNum",
+        "newsReadNum",
+      ],
+    });
+
+    return list;
+  }
+
+  // 最新文章推荐
+  static async getNewList(content) {
+    const news = await News.findOne({
+      where: {
+        id: content.newsId,
+      },
+    });
+
+    const list = await News.findAndCountAll({
+      order: [["created_at", "DESC"]],
+      where: {
+        tag: news.tag,
+      },
+      limit: 5,
+      attributes: [
+        "id",
+        "title",
+        "author",
+        "tag",
+        "newsLikeNum",
+        "newsReadNum",
+      ],
     });
 
     return list;

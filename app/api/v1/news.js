@@ -32,15 +32,15 @@ router.post("/create", new Auth().m, async (ctx, next) => {
 // 获取资讯列表
 router.get("/list", new Auth().getUID, async (ctx, next) => {
   let params = {};
-  const { tagType, rankingType, pageIndex, pageSize } = ctx.query;
+  const { tag, rankingType, pageIndex, pageSize } = ctx.query;
 
   // 根据标签类型查找
-  if (tagType) {
-    params["tag"] = tagType * 1; //隐式类型转换
+  if (tag) {
+    params["tag"] = tag * 1; //隐式类型转换
   }
 
   // 如果为"全部"类型：
-  if (tagType * 1 === 20000) params = null;
+  if (tag * 1 === 20000) params = null;
 
   let newsList = await News.getHomePageNewsList(
     { where: params },
@@ -60,10 +60,6 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
 
   for (let i = 0; i < newsList.rows.length; i++) {
     newsList.rows[i].isLike = false;
-
-    // 添加评论数量的字段信息
-    // const data = await BComment.getCommentList(blogList.rows[i].id);
-    // blogList.rows[i].commentNum = data.length;
 
     // 当前用户是否已经点赞该博客
     if (ctx.auth && ctx.auth.uid) {
@@ -104,10 +100,6 @@ router.get("/hot", new Auth().getUID, async (ctx, next) => {
   for (let i = 0; i < hotNewsList.rows.length; i++) {
     hotNewsList.rows[i].isLike = false;
 
-    // 添加评论数量的字段信息
-    // const data = await BComment.getCommentList(hotBlogList.rows[i].id);
-    // hotBlogList.rows[i].commentNum = data.length;
-
     // 当前用户是否已经点赞该博客
     if (ctx.auth && ctx.auth.uid) {
       for (let j = 0; j < records.rows.length; j++) {
@@ -126,6 +118,48 @@ router.get("/hot", new Auth().getUID, async (ctx, next) => {
     error_code: 0,
     msg: "ok",
     data: hotNewsList,
+  };
+});
+
+// 热门资讯
+router.get("/new", new Auth().getUID, async (ctx, next) => {
+  const v = await new RecommendNewsValidator().validate(ctx);
+  const content = {
+    newsId: v.get("query.id"),
+  };
+
+  let newNewsList = await News.getNewList(content);
+
+  newNewsList = JSON.parse(JSON.stringify(newNewsList));
+
+  let records = null;
+  if (ctx.auth && ctx.auth.uid) {
+    records = await NewsLike.getRecord({ user: ctx.auth.uid });
+
+    records = JSON.parse(JSON.stringify(records));
+  }
+
+  for (let i = 0; i < newNewsList.rows.length; i++) {
+    newNewsList.rows[i].isLike = false;
+
+    // 当前用户是否已经点赞该博客
+    if (ctx.auth && ctx.auth.uid) {
+      for (let j = 0; j < records.rows.length; j++) {
+        if (
+          newNewsList.rows[i].id === records.rows[j].newsId &&
+          records.rows[j].isLike
+        ) {
+          newNewsList.rows[i].isLike = true;
+        }
+      }
+    }
+  }
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: newNewsList,
   };
 });
 
@@ -151,10 +185,6 @@ router.get("/more", new Auth().getUID, async (ctx, next) => {
 
   for (let i = 0; i < newsList.rows.length; i++) {
     newsList.rows[i].isLike = false;
-
-    // 添加评论数量的字段信息
-    // const data = await BComment.getCommentList(blogList.rows[i].id);
-    // blogList.rows[i].commentNum = data.length;
 
     // 当前用户是否已经点赞该博客
     if (ctx.auth && ctx.auth.uid) {
