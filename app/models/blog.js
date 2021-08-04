@@ -294,7 +294,6 @@ Blog.init(
     },
     tag: {
       type: Sequelize.INTEGER,
-      allowNull: false,
     },
     titlePic: {
       type: Sequelize.STRING,

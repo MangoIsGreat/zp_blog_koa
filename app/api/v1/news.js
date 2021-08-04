@@ -24,7 +24,7 @@ router.post("/create", new Auth().m, async (ctx, next) => {
     author: ctx.auth.uid,
   };
 
-  await Blog.createNews(content);
+  await News.createNews(content);
 
   success();
 });
@@ -87,7 +87,7 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
 router.get("/hot", new Auth().getUID, async (ctx, next) => {
   const v = await new RecommendNewsValidator().validate(ctx);
   const content = {
-    newsId: v.get("query.newsId"),
+    newsId: v.get("query.id"),
   };
 
   let hotNewsList = await News.getHotList(content);
@@ -181,13 +181,13 @@ router.get("/article", new Auth().getUID, async (ctx, next) => {
     uid = ctx.auth.uid;
   }
 
-  const hotNewsList = await News.getNews(ctx.query.id, uid);
+  const newsItem = await News.getNews(ctx.query.id, uid);
 
   ctx.body = {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: hotNewsList,
+    data: newsItem,
   };
 });
 

@@ -181,13 +181,13 @@ router.get("/article", new Auth().getUID, async (ctx, next) => {
     uid = ctx.auth.uid;
   }
 
-  const hotBlogList = await Blog.getArticle(ctx.query.id, uid);
+  const blogItem = await Blog.getArticle(ctx.query.id, uid);
 
   ctx.body = {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: hotBlogList,
+    data: blogItem,
   };
 });
 

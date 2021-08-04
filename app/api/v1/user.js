@@ -26,7 +26,7 @@ router.post("/login", async (ctx) => {
 
       if (!token) return;
 
-      data = await User.getUserInfo(v.get("body.account"));
+      data = await User.getLoginUserInfo(v.get("body.account"));
 
       break;
     case LoginType.USER_MINI_PROGRAM:

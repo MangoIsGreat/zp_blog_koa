@@ -71,7 +71,7 @@ class News extends Model {
     });
 
     const list = await News.findAndCountAll({
-      order: [["blogLikeNum", "DESC"]],
+      order: [["newsLikeNum", "DESC"]],
       where: {
         tag: news.tag,
       },
@@ -196,8 +196,6 @@ class News extends Model {
             "avatar",
             "profession",
             "signature",
-            "blogReadNum",
-            "blogLikeNum",
             "fansNum",
             "idolNum",
           ],
@@ -292,7 +290,6 @@ News.init(
     },
     tag: {
       type: Sequelize.INTEGER, // 资讯类型
-      allowNull: false,
     },
     titlePic: {
       type: Sequelize.STRING,

@@ -44,7 +44,7 @@ class User extends Model {
   }
 
   // 获取用户信息：
-  static async getUserInfo(account) {
+  static async getLoginUserInfo(account) {
     return await User.findOne({
       where: { email: account },
     });

@@ -10,7 +10,7 @@ class NewsType extends Model {
   // 获取“资讯”分类标签
   static async getNewsTypeList() {
     const types = await NewsType.findAndCountAll({
-      order: [["tagType", "ASC"]],
+      order: [["tag_type", "ASC"]],
       attributes: ["id", "tag_type", "tag_name"],
     });
 

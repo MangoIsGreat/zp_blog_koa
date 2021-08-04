@@ -331,7 +331,7 @@ class NewsValidator extends LinValidator {
         min: 1,
       }),
     ];
-    this.tagType = [
+    this.tag = [
       new Rule("isLength", "不允许为空", {
         min: 1,
       }),
@@ -344,7 +344,7 @@ class NewsValidator extends LinValidator {
 class RecommendNewsValidator extends LinValidator {
   constructor() {
     super();
-    this.newsId = [
+    this.id = [
       new Rule("isLength", "资讯ID号不能为空", {
         min: 1,
       }),
