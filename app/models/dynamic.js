@@ -216,6 +216,27 @@ class Dynamic extends Model {
 
     return dynamics;
   }
+
+  // 获取某个作者的动态列表
+  static async getUserDynList(params) {
+    const dynamic = await Dynamic.findAndCountAll({
+      limit: Number(params.pageSize),
+      offset: (Number(params.pageIndex) - 1) * Number(params.pageSize),
+      where: {
+        author: params.uid,
+      },
+      include: [
+        {
+          as: "userInfo",
+          model: User,
+          attributes: ["nickname", "avatar"],
+        },
+      ],
+      attributes: ["id", "theme", "content", "likeNum", "commNum", "picUrl"],
+    });
+
+    return dynamic;
+  }
 }
 
 Dynamic.init(

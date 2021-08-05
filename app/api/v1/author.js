@@ -5,6 +5,8 @@
  */
 const Router = require("koa-router");
 const { User } = require("../../models/user");
+const { Blog } = require("../../models/blog");
+const { Dynamic } = require("../../models/dynamic");
 const { Fans } = require("../../models/fans");
 const { Auth } = require("../../../middlewares/auth");
 const router = new Router({
@@ -50,6 +52,34 @@ router.get("/ranking", new Auth().getUID, async (ctx, next) => {
     error_code: 0,
     msg: "ok",
     data: result,
+  };
+});
+
+// 获取作者的文章列表
+router.get("/artlist", new Auth().getUID, async (ctx, next) => {
+  const { pageIndex, pageSize, uid } = ctx.request.query;
+
+  const listData = await Blog.getUserArtList({ pageIndex, pageSize, uid });
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: listData,
+  };
+});
+
+// 获取作者的动态列表
+router.get("/dynlist", new Auth().getUID, async (ctx, next) => {
+  const { pageIndex, pageSize, uid } = ctx.request.query;
+
+  const listData = await Dynamic.getUserDynList({ pageIndex, pageSize, uid });
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: listData,
   };
 });
 

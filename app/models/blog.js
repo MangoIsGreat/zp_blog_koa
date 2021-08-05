@@ -21,14 +21,14 @@ class Blog extends Model {
     if (status === "new") ranking = "updated_at";
 
     // 多表查询(一对多)
-    Blog.belongsTo(User, {
-      foreignKey: "author",
-    });
+    // Blog.belongsTo(User, {
+    //   foreignKey: "author",
+    // });
 
-    Blog.belongsTo(Tag, {
-      foreignKey: "tag",
-      targetKey: "tagType",
-    });
+    // Blog.belongsTo(Tag, {
+    //   foreignKey: "tag",
+    //   targetKey: "tagType",
+    // });
 
     const blogs = await Blog.findAndCountAll({
       where,
@@ -56,6 +56,7 @@ class Blog extends Model {
         "title",
         "titlePic",
         "updated_at",
+        "commentNum",
       ],
     });
 
@@ -91,14 +92,14 @@ class Blog extends Model {
     });
 
     // 多表查询(一对多)
-    Blog.belongsTo(User, {
-      foreignKey: "author",
-    });
+    // Blog.belongsTo(User, {
+    //   foreignKey: "author",
+    // });
 
-    Blog.belongsTo(Tag, {
-      foreignKey: "tag",
-      targetKey: "tagType",
-    });
+    // Blog.belongsTo(Tag, {
+    //   foreignKey: "tag",
+    //   targetKey: "tagType",
+    // });
 
     const list = await Blog.findAndCountAll({
       order: [["blogReadNum", "DESC"]],
@@ -137,14 +138,14 @@ class Blog extends Model {
   // 获取某一篇文章
   static async getArticle(blogId, uid) {
     // 多表查询(一对多)
-    Blog.belongsTo(User, {
-      foreignKey: "author",
-    });
+    // Blog.belongsTo(User, {
+    //   foreignKey: "author",
+    // });
 
-    Blog.belongsTo(Tag, {
-      foreignKey: "tag",
-      targetKey: "tagType",
-    });
+    // Blog.belongsTo(Tag, {
+    //   foreignKey: "tag",
+    //   targetKey: "tagType",
+    // });
 
     const blog = await Blog.findOne({
       where: {
@@ -219,6 +220,7 @@ class Blog extends Model {
         "blogReadNum",
         "created_at",
         "updated_at",
+        "commentNum"
       ],
     });
 
@@ -265,6 +267,38 @@ class Blog extends Model {
     blogs.isCollect = isCollect;
 
     return blogs;
+  }
+
+  // 获取某个作者的文章列表
+  static async getUserArtList(params) {
+    const result = await Blog.findAndCountAll({
+      limit: Number(params.pageSize),
+      offset: (Number(params.pageIndex) - 1) * Number(params.pageSize),
+      where: {
+        author: params.uid,
+      },
+      include: [
+        {
+          model: User,
+          attributes: ["nickname"],
+        },
+        {
+          model: Tag,
+          attributes: ["tagName"],
+        },
+      ],
+      attributes: [
+        "id",
+        "title",
+        "description",
+        "titlePic",
+        "blogLikeNum",
+        "blogReadNum",
+        "commentNum",
+      ],
+    });
+
+    return result;
   }
 }
 
@@ -316,6 +350,16 @@ Blog.init(
     tableName: "blog",
   }
 );
+
+// 建立表关联关系
+sequelize.models.Blog.belongsTo(User, {
+  foreignKey: "author",
+});
+
+sequelize.models.Blog.belongsTo(Tag, {
+  foreignKey: "tag",
+  targetKey: "tagType",
+});
 
 module.exports = {
   Blog,
