@@ -68,6 +68,21 @@ class DLike extends Model {
 
     return records;
   }
+
+  // 获取某个作者点赞过的"动态"记录
+  static async getUserLike({ pageIndex, pageSize, uid }) {
+    const result = await DLike.findAndCountAll({
+      where: {
+        user: uid,
+        isLike: true,
+      },
+      limit: Number(pageSize),
+      offset: (Number(pageIndex) - 1) * Number(pageSize),
+      attributes: ["dynamic", "created_at"],
+    });
+
+    return result;
+  }
 }
 
 DLike.init(

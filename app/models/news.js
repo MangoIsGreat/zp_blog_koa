@@ -26,7 +26,7 @@ class News extends Model {
       include: [
         {
           model: User,
-          attributes: ["nickname"],
+          attributes: ["id", "nickname"],
         },
         {
           model: NewsType,
@@ -122,7 +122,7 @@ class News extends Model {
       include: [
         {
           model: User,
-          attributes: ["nickname"],
+          attributes: ["id", "nickname"],
         },
         {
           model: NewsType,
@@ -202,6 +202,33 @@ class News extends Model {
     }
 
     return newsItem;
+  }
+
+  // 获取“作者”喜欢的"资讯"列表
+  static async getLikeNews(newsId) {
+    const result = await News.findOne({
+      where: { id: newsId },
+      attributes: [
+        "id",
+        "title",
+        "description",
+        "titlePic",
+        "newsLikeNum",
+        "newsReadNum",
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nickname", "avatar"],
+        },
+        {
+          model: NewsType,
+          attributes: ["tagName", "id"],
+        },
+      ],
+    });
+
+    return result;
   }
 }
 

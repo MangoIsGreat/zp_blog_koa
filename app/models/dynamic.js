@@ -229,13 +229,37 @@ class Dynamic extends Model {
         {
           as: "userInfo",
           model: User,
-          attributes: ["nickname", "avatar"],
+          attributes: ["id", "nickname", "avatar"],
         },
       ],
       attributes: ["id", "theme", "content", "likeNum", "commNum", "picUrl"],
     });
 
     return dynamic;
+  }
+
+  // 获取“作者”喜欢的"动态"列表
+  static async getLikeDyn(dynId) {
+    const result = await Dynamic.findOne({
+      where: { id: dynId },
+      attributes: [
+        "id",
+        "theme",
+        "content",
+        "likeNum",
+        "commNum",
+        "picUrl",
+      ],
+      include: [
+        {
+          as: "userInfo",
+          model: User,
+          attributes: ["id", "nickname", "avatar"],
+        },
+      ],
+    });
+
+    return result;
   }
 }
 

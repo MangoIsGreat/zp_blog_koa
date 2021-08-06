@@ -220,7 +220,7 @@ class Blog extends Model {
         "blogReadNum",
         "created_at",
         "updated_at",
-        "commentNum"
+        "commentNum",
       ],
     });
 
@@ -271,7 +271,14 @@ class Blog extends Model {
 
   // 获取某个作者的文章列表
   static async getUserArtList(params) {
+    // 定义文章排序方式
+    let orderType = "blogReadNum";
+    if (params.type === "new") {
+      orderType = "created_at";
+    }
+
     const result = await Blog.findAndCountAll({
+      order: [[orderType, "DESC"]],
       limit: Number(params.pageSize),
       offset: (Number(params.pageIndex) - 1) * Number(params.pageSize),
       where: {
@@ -280,7 +287,7 @@ class Blog extends Model {
       include: [
         {
           model: User,
-          attributes: ["nickname"],
+          attributes: ["id", "nickname"],
         },
         {
           model: Tag,
@@ -295,6 +302,34 @@ class Blog extends Model {
         "blogLikeNum",
         "blogReadNum",
         "commentNum",
+      ],
+    });
+
+    return result;
+  }
+
+  // 获取“作者”喜欢的博客列表
+  static async getLikeBlog(blogId) {
+    const result = await Blog.findOne({
+      where: { id: blogId },
+      attributes: [
+        "id",
+        "title",
+        "description",
+        "titlePic",
+        "blogLikeNum",
+        "blogReadNum",
+        "commentNum",
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nickname"],
+        },
+        {
+          model: Tag,
+          attributes: ["tagName"],
+        },
       ],
     });
 

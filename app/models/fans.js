@@ -80,6 +80,50 @@ class Fans extends Model {
 
     return false;
   }
+
+  // 获取用户关注的人列表
+  static async getUserAttention({ pageIndex, pageSize, uid }) {
+    const result = await Fans.findAndCountAll({
+      order: [["created_at", "DESC"]],
+      where: {
+        followers: uid,
+      },
+      limit: Number(pageSize),
+      offset: (Number(pageIndex) - 1) * Number(pageSize),
+      include: [
+        {
+          model: User,
+          as: "beAttention",
+          attributes: ["id", "nickname", "avatar", "profession"],
+        },
+      ],
+      attributes: ["id"],
+    });
+
+    return result;
+  }
+
+  // 获取用户的粉丝列表
+  static async getUserFans({ pageIndex, pageSize, uid }) {
+    const result = await Fans.findAndCountAll({
+      order: [["created_at", "DESC"]],
+      where: {
+        byFollowers: uid,
+      },
+      limit: Number(pageSize),
+      offset: (Number(pageIndex) - 1) * Number(pageSize),
+      include: [
+        {
+          model: User,
+          as: "attention",
+          attributes: ["id", "nickname", "avatar", "profession"],
+        },
+      ],
+      attributes: ["id"],
+    });
+
+    return result;
+  }
 }
 
 Fans.init(
@@ -105,6 +149,16 @@ Fans.init(
     tableName: "fans",
   }
 );
+
+sequelize.models.Fans.belongsTo(User, {
+  as: "beAttention",
+  foreignKey: "byFollowers",
+});
+
+sequelize.models.Fans.belongsTo(User, {
+  as: "attention",
+  foreignKey: "followers",
+});
 
 module.exports = {
   Fans,

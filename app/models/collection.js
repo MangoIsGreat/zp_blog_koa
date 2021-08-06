@@ -46,6 +46,20 @@ class Collection extends Model {
 
     return result;
   }
+
+  // 获取某个用户的收藏夹列表
+  static async getCollections({ pageIndex, pageSize, uid }) {
+    const result = await Collection.findAndCountAll({
+      where: {
+        userId: uid,
+      },
+      limit: Number(pageSize),
+      offset: (Number(pageIndex) - 1) * Number(pageSize),
+      attributes: ["id", "type", "number"],
+    });
+
+    return result;
+  }
 }
 
 Collection.init(

@@ -82,6 +82,21 @@ class BLike extends Model {
 
     return records;
   }
+
+  // 获取某个作者点赞过的博客记录
+  static async getUserLike({ pageIndex, pageSize, uid }) {
+    const result = await BLike.findAndCountAll({
+      where: {
+        user: uid,
+        isLike: true,
+      },
+      limit: Number(pageSize),
+      offset: (Number(pageIndex) - 1) * Number(pageSize),
+      attributes: ["blog", "created_at"],
+    });
+
+    return result;
+  }
 }
 
 BLike.init(
