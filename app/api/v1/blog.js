@@ -1,7 +1,6 @@
 const Router = require("koa-router");
 const { Blog } = require("../../models/blog");
 const { BLike } = require("../../models/blike");
-const { BComment } = require("../../models/bComment");
 const { success } = require("../../lib/helper");
 const { Auth } = require("../../../middlewares/auth");
 const {
@@ -61,10 +60,6 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
   for (let i = 0; i < blogList.rows.length; i++) {
     blogList.rows[i].isLike = false;
 
-    // 添加评论数量的字段信息
-    // const data = await BComment.getCommentList(blogList.rows[i].id);
-    // blogList.rows[i].commentNum = data.length;
-
     // 当前用户是否已经点赞该博客
     if (ctx.auth && ctx.auth.uid) {
       for (let j = 0; j < records.rows.length; j++) {
@@ -103,10 +98,6 @@ router.get("/hot", new Auth().getUID, async (ctx, next) => {
 
   for (let i = 0; i < hotBlogList.rows.length; i++) {
     hotBlogList.rows[i].isLike = false;
-
-    // 添加评论数量的字段信息
-    // const data = await BComment.getCommentList(hotBlogList.rows[i].id);
-    // hotBlogList.rows[i].commentNum = data.length;
 
     // 当前用户是否已经点赞该博客
     if (ctx.auth && ctx.auth.uid) {
@@ -151,10 +142,6 @@ router.get("/more", new Auth().getUID, async (ctx, next) => {
 
   for (let i = 0; i < blogList.rows.length; i++) {
     blogList.rows[i].isLike = false;
-
-    // 添加评论数量的字段信息
-    // const data = await BComment.getCommentList(blogList.rows[i].id);
-    // blogList.rows[i].commentNum = data.length;
 
     // 当前用户是否已经点赞该博客
     if (ctx.auth && ctx.auth.uid) {

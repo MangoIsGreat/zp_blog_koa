@@ -97,6 +97,33 @@ class BLike extends Model {
 
     return result;
   }
+
+  // 获取某个作者点赞过的所有博客记录
+  static async getUserLikeArt(uid) {
+    const result = await BLike.findAll({
+      where: {
+        user: uid,
+        isLike: true,
+      },
+      attributes: ["blog", "created_at"],
+      include: [
+        {
+          model: Blog,
+          attributes: [
+            "id",
+            "title",
+            "description",
+            "titlePic",
+            "blogLikeNum",
+            "blogReadNum",
+            "commentNum",
+          ],
+        },
+      ],
+    });
+
+    return result;
+  }
 }
 
 BLike.init(
@@ -124,6 +151,10 @@ BLike.init(
     tableName: "blike",
   }
 );
+
+sequelize.models.BLike.belongsTo(Blog, {
+  foreignKey: "blog",
+});
 
 module.exports = {
   BLike,

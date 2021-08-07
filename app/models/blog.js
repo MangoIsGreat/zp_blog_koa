@@ -20,16 +20,6 @@ class Blog extends Model {
 
     if (status === "new") ranking = "updated_at";
 
-    // 多表查询(一对多)
-    // Blog.belongsTo(User, {
-    //   foreignKey: "author",
-    // });
-
-    // Blog.belongsTo(Tag, {
-    //   foreignKey: "tag",
-    //   targetKey: "tagType",
-    // });
-
     const blogs = await Blog.findAndCountAll({
       where,
       order: [[ranking, "DESC"]],
@@ -334,6 +324,37 @@ class Blog extends Model {
     });
 
     return result;
+  }
+
+  // 获取用户发表的所有文章
+  static async getUserArticle(uid) {
+    const resut = await Blog.findAll({
+      where: {
+        author: uid,
+      },
+      attributes: [
+        "id",
+        "title",
+        "description",
+        "titlePic",
+        "blogLikeNum",
+        "blogReadNum",
+        "commentNum",
+        "created_at",
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nickname"],
+        },
+        {
+          model: Tag,
+          attributes: ["tagName"],
+        },
+      ],
+    });
+
+    return resut;
   }
 }
 

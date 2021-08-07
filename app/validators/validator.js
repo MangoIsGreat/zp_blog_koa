@@ -352,6 +352,18 @@ class RecommendNewsValidator extends LinValidator {
   }
 }
 
+// 用户模块--验证是否传uid
+class AuthorUIDValidator extends LinValidator {
+  constructor() {
+    super();
+    this.uid = [
+      new Rule("isLength", "uid不能为空", {
+        min: 1,
+      }),
+    ];
+  }
+}
+
 module.exports = {
   PositiveIntegerValidator,
   RegisterValidator,
@@ -372,5 +384,6 @@ module.exports = {
   DReplyValidator,
   DcommentListValidator,
   NewsValidator,
-  RecommendNewsValidator
+  RecommendNewsValidator,
+  AuthorUIDValidator,
 };

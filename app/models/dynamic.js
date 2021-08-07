@@ -242,6 +242,23 @@ class Dynamic extends Model {
   static async getLikeDyn(dynId) {
     const result = await Dynamic.findOne({
       where: { id: dynId },
+      attributes: ["id", "theme", "content", "likeNum", "commNum", "picUrl"],
+      include: [
+        {
+          as: "userInfo",
+          model: User,
+          attributes: ["id", "nickname", "avatar"],
+        },
+      ],
+    });
+
+    return result;
+  }
+
+  // 获取作者发布的所有动态
+  static async getUserDynamic(uid) {
+    const result = await Dynamic.findAll({
+      where: { author: uid },
       attributes: [
         "id",
         "theme",
@@ -249,6 +266,7 @@ class Dynamic extends Model {
         "likeNum",
         "commNum",
         "picUrl",
+        "created_at",
       ],
       include: [
         {

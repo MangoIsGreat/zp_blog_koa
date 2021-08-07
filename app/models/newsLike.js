@@ -6,7 +6,6 @@
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 const { News } = require("./news");
-const { User } = require("./user");
 
 class NewsLike extends Model {
   // 点赞资讯功能：
@@ -21,18 +20,9 @@ class NewsLike extends Model {
       },
     });
 
-    // 获取用户信息
-    // const user = await User.findOne({
-    //   where: {
-    //     id: news.author,
-    //   },
-    // });
-
     // 点赞记录存在&已点赞
     if (like && like.isLike) {
       await news.decrement("newsLikeNum", { by: 1 });
-      // 博客作者被赞数-1
-      // await user.decrement("blogLikeNum", { by: 1 });
 
       await NewsLike.update(
         { isLike: false },
@@ -45,8 +35,6 @@ class NewsLike extends Model {
     // 点赞记录存在&未点赞
     if (like && !like.isLike) {
       await news.increment("newsLikeNum", { by: 1 });
-      // 博客作者被赞数+1
-      // await user.increment("blogLikeNum", { by: 1 });
 
       await NewsLike.update(
         { isLike: true },
@@ -59,8 +47,6 @@ class NewsLike extends Model {
     // 未点过赞
     if (!like) {
       await news.increment("newsLikeNum", { by: 1 });
-      // 博客作者被赞数+1
-      // await user.increment("blogLikeNum", { by: 1 });
 
       await NewsLike.create({
         newsId: content.newsId,
@@ -97,6 +83,36 @@ class NewsLike extends Model {
 
     return result;
   }
+
+  // 获取用户点赞过的所有资讯记录
+  static async getUserLikeNews(uid) {
+    const result = await NewsLike.findAll({
+      where: {
+        user: uid,
+        isLike: true,
+      },
+      attributes: ["newsId", "created_at"],
+      include: [
+        {
+          model: News,
+          attributes: [
+            "author",
+            "newsLikeNum",
+            "newsReadNum",
+            "created_at",
+            "description",
+            "id",
+            "tag",
+            "title",
+            "titlePic",
+            "updated_at",
+          ],
+        },
+      ],
+    });
+
+    return result;
+  }
 }
 
 NewsLike.init(
@@ -124,6 +140,10 @@ NewsLike.init(
     tableName: "newslike",
   }
 );
+
+sequelize.models.NewsLike.belongsTo(News, {
+  foreignKey: "newsId",
+});
 
 module.exports = {
   NewsLike,

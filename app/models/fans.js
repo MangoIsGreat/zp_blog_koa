@@ -124,6 +124,25 @@ class Fans extends Model {
 
     return result;
   }
+
+  // 获取用户关注的所有人
+  static async getUserIdols(uid) {
+    const result = await Fans.findAll({
+      where: {
+        followers: uid,
+      },
+      include: [
+        {
+          model: User,
+          as: "beAttention",
+          attributes: ["id", "nickname", "avatar", "profession"],
+        },
+      ],
+      attributes: ["id", "created_at"],
+    });
+
+    return result;
+  }
 }
 
 Fans.init(

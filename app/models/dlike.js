@@ -83,6 +83,32 @@ class DLike extends Model {
 
     return result;
   }
+
+  // 获取用户赞过的所有动态
+  static async getUserLikeDyn(uid) {
+    const result = await DLike.findAll({
+      where: {
+        user: uid,
+        isLike: true,
+      },
+      attributes: ["dynamic", "created_at"],
+      include: [
+        {
+          model: Dynamic,
+          attributes: [
+            "id",
+            "theme",
+            "content",
+            "likeNum",
+            "commNum",
+            "picUrl",
+          ],
+        },
+      ],
+    });
+
+    return result;
+  }
 }
 
 DLike.init(
@@ -110,6 +136,10 @@ DLike.init(
     tableName: "dlike",
   }
 );
+
+sequelize.models.DLike.belongsTo(Dynamic, {
+  foreignKey: "dynamic",
+});
 
 module.exports = {
   DLike,

@@ -11,7 +11,7 @@ class News extends Model {
     return news;
   }
 
-  // 获取博客列表
+  // 获取资讯列表
   static async getHomePageNewsList({ where }, status, pageIndex, pageSize) {
     // 文章排序状态(默认按阅读量排序)：
     let ranking = "newsReadNum";
@@ -225,6 +225,37 @@ class News extends Model {
           model: NewsType,
           attributes: ["tagName", "id"],
         },
+      ],
+    });
+
+    return result;
+  }
+
+  // 获取作者发表的所有资讯
+  static async getUserNews() {
+    const result = await News.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nickname"],
+        },
+        {
+          model: NewsType,
+          attributes: ["tagName"],
+        },
+      ],
+      attributes: [
+        "author",
+        "newsLikeNum",
+        "newsReadNum",
+        "created_at",
+        "description",
+        "id",
+        "tag",
+        "title",
+        "titlePic",
+        "updated_at",
+        "created_at",
       ],
     });
 
