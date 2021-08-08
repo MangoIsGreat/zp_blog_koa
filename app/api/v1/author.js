@@ -72,12 +72,8 @@ router.get("/artlist", new Auth().getUID, async (ctx, next) => {
     type,
   });
 
-  let records = null;
-  if (ctx.auth && ctx.auth.uid) {
-    records = await BLike.getRecord({ user: ctx.auth.uid });
-
-    records = JSON.parse(JSON.stringify(records));
-  }
+  let records = await BLike.getRecord({ user: uid });
+  records = JSON.parse(JSON.stringify(records));
 
   listData = JSON.parse(JSON.stringify(listData));
 
@@ -85,11 +81,9 @@ router.get("/artlist", new Auth().getUID, async (ctx, next) => {
     listData.rows[i].isLike = false;
 
     // 当前用户是否已经点赞该博客
-    if (ctx.auth && ctx.auth.uid) {
-      for (let j = 0; j < records.rows.length; j++) {
-        if (listData.rows[i].id === records.rows[j].blog) {
-          listData.rows[i].isLike = true;
-        }
+    for (let j = 0; j < records.rows.length; j++) {
+      if (listData.rows[i].id === records.rows[j].blog) {
+        listData.rows[i].isLike = true;
       }
     }
   }
@@ -115,21 +109,19 @@ router.get("/dynlist", new Auth().getUID, async (ctx, next) => {
     let isAttention = false;
     // 标记是否是用户本人
     let isSelf = false;
-    if (ctx.auth && ctx.auth.uid) {
-      const attention = await Fans.findOne({
-        where: {
-          byFollowers: listData.rows[i].id,
-          followers: ctx.auth.uid,
-        },
-      });
+    const attention = await Fans.findOne({
+      where: {
+        byFollowers: listData.rows[i].id,
+        followers: uid,
+      },
+    });
 
-      if (attention && attention.isFollower) {
-        isAttention = true;
-      }
+    if (attention && attention.isFollower) {
+      isAttention = true;
+    }
 
-      if (listData.rows[i].userInfo.id === ctx.auth.uid) {
-        isSelf = true;
-      }
+    if (listData.rows[i].userInfo.id === uid) {
+      isSelf = true;
     }
 
     listData.rows[i].isSelf = isSelf;
@@ -138,22 +130,16 @@ router.get("/dynlist", new Auth().getUID, async (ctx, next) => {
   }
 
   // 添加是否点赞标记
-  let records = null;
-  if (ctx.auth && ctx.auth.uid) {
-    records = await DLike.getRecord({ user: ctx.auth.uid });
-
-    records = JSON.parse(JSON.stringify(records));
-  }
+  let records = await DLike.getRecord({ user: uid });
+  records = JSON.parse(JSON.stringify(records));
 
   for (let i = 0; i < listData.rows.length; i++) {
     listData.rows[i].isLike = false;
 
     // 当前用户是否已经点赞该博客
-    if (ctx.auth && ctx.auth.uid) {
-      for (let j = 0; j < records.rows.length; j++) {
-        if (listData.rows[i].id === records.rows[j].dynamic) {
-          listData.rows[i].isLike = true;
-        }
+    for (let j = 0; j < records.rows.length; j++) {
+      if (listData.rows[i].id === records.rows[j].dynamic) {
+        listData.rows[i].isLike = true;
       }
     }
   }
@@ -181,22 +167,16 @@ router.get("/likeBlog", new Auth().getUID, async (ctx, next) => {
 
   result = JSON.parse(JSON.stringify(result));
 
-  let records = null;
-  if (ctx.auth && ctx.auth.uid) {
-    records = await BLike.getRecord({ user: ctx.auth.uid });
-
-    records = JSON.parse(JSON.stringify(records));
-  }
+  let records = await BLike.getRecord({ user: ctx.auth.uid });
+  records = JSON.parse(JSON.stringify(records));
 
   for (let i = 0; i < result.length; i++) {
     result[i].isLike = false;
 
     // 当前用户是否已经点赞该博客
-    if (ctx.auth && ctx.auth.uid) {
-      for (let j = 0; j < records.rows.length; j++) {
-        if (result[i].id === records.rows[j].blog) {
-          result[i].isLike = true;
-        }
+    for (let j = 0; j < records.rows.length; j++) {
+      if (result[i].id === records.rows[j].blog) {
+        result[i].isLike = true;
       }
     }
   }
@@ -230,21 +210,19 @@ router.get("/likeDyn", new Auth().getUID, async (ctx, next) => {
     let isAttention = false;
     // 标记是否是用户本人
     let isSelf = false;
-    if (ctx.auth && ctx.auth.uid) {
-      const attention = await Fans.findOne({
-        where: {
-          byFollowers: result[i].id,
-          followers: ctx.auth.uid,
-        },
-      });
+    const attention = await Fans.findOne({
+      where: {
+        byFollowers: result[i].id,
+        followers: uid,
+      },
+    });
 
-      if (attention && attention.isFollower) {
-        isAttention = true;
-      }
+    if (attention && attention.isFollower) {
+      isAttention = true;
+    }
 
-      if (result[i].userInfo.id === ctx.auth.uid) {
-        isSelf = true;
-      }
+    if (result[i].userInfo.id === uid) {
+      isSelf = true;
     }
 
     result[i].isSelf = isSelf;
@@ -253,22 +231,17 @@ router.get("/likeDyn", new Auth().getUID, async (ctx, next) => {
   }
 
   // 添加是否点赞标记
-  let records = null;
-  if (ctx.auth && ctx.auth.uid) {
-    records = await DLike.getRecord({ user: ctx.auth.uid });
+  let records = await DLike.getRecord({ user: uid });
 
-    records = JSON.parse(JSON.stringify(records));
-  }
+  records = JSON.parse(JSON.stringify(records));
 
   for (let i = 0; i < result.length; i++) {
     result[i].isLike = false;
 
     // 当前用户是否已经点赞该博客
-    if (ctx.auth && ctx.auth.uid) {
-      for (let j = 0; j < records.rows.length; j++) {
-        if (result[i].id === records.rows[j].dynamic) {
-          result[i].isLike = true;
-        }
+    for (let j = 0; j < records.rows.length; j++) {
+      if (result[i].id === records.rows[j].dynamic) {
+        result[i].isLike = true;
       }
     }
   }
@@ -329,17 +302,15 @@ router.get("/byfollowers", new Auth().getUID, async (ctx, next) => {
   for (let i = 0; i < result.rows.length; i++) {
     // 标记是否已建立"关注关系"
     let isAttention = false;
-    if (ctx.auth && ctx.auth.uid) {
-      const attention = await Fans.findOne({
-        where: {
-          byFollowers: result.rows[i].id,
-          followers: ctx.auth.uid,
-        },
-      });
+    const attention = await Fans.findOne({
+      where: {
+        byFollowers: result.rows[i].id,
+        followers: uid,
+      },
+    });
 
-      if (attention && attention.isFollower) {
-        isAttention = true;
-      }
+    if (attention && attention.isFollower) {
+      isAttention = true;
     }
 
     result.rows[i].isAttention = isAttention;
@@ -364,17 +335,15 @@ router.get("/followers", new Auth().getUID, async (ctx, next) => {
   for (let i = 0; i < result.rows.length; i++) {
     // 标记是否已建立"关注关系"
     let isAttention = false;
-    if (ctx.auth && ctx.auth.uid) {
-      const attention = await Fans.findOne({
-        where: {
-          byFollowers: result.rows[i].id,
-          followers: ctx.auth.uid,
-        },
-      });
+    const attention = await Fans.findOne({
+      where: {
+        byFollowers: result.rows[i].id,
+        followers: uid,
+      },
+    });
 
-      if (attention && attention.isFollower) {
-        isAttention = true;
-      }
+    if (attention && attention.isFollower) {
+      isAttention = true;
     }
 
     result.rows[i].isAttention = isAttention;
@@ -388,8 +357,46 @@ router.get("/followers", new Auth().getUID, async (ctx, next) => {
   };
 });
 
+// 获取用户赞过的文章/沸点/资讯数
+router.get("/likeNum", new Auth().getUID, async (ctx, next) => {
+  const v = await new AuthorUIDValidator().validate(ctx);
+
+  // 赞过的文章
+  const likeBlog = await BLike.getUserLike({
+    pageIndex: 1,
+    pageSize: 15,
+    uid: v.get("query.uid"),
+  });
+
+  // 赞过的动态
+  const likeDyn = await DLike.getUserLike({
+    pageIndex: 1,
+    pageSize: 15,
+    uid: v.get("query.uid"),
+  });
+
+  // 赞过的资讯
+  const likeNews = await NewsLike.getUserLike({
+    pageIndex: 1,
+    pageSize: 15,
+    uid: v.get("query.uid"),
+  });
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: {
+      like_blog_num: likeBlog.count,
+      like_dyn_num: likeDyn.count,
+      like_news_num: likeNews.count,
+      like_count: likeBlog.count + likeDyn.count + likeNews.count,
+    },
+  };
+});
+
 // 作者的各种活跃动态汇总
-router.get("/followers", new Auth().getUID, async (ctx, next) => {
+router.get("/dynamic", new Auth().getUID, async (ctx, next) => {
   const v = await new AuthorUIDValidator().validate(ctx);
   const { pageIndex, pageSize } = ctx.request.query;
 
@@ -463,11 +470,16 @@ router.get("/followers", new Auth().getUID, async (ctx, next) => {
     return b.created_at - a.created_at;
   });
 
+  infoData = infoData.slice(
+    (Number(pageIndex) - 1) * Number(pageSize),
+    Number(pageIndex) * Number(pageSize)
+  );
+
   ctx.body = {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: result,
+    data: infoData,
   };
 });
 
