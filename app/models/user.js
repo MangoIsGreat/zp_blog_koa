@@ -94,6 +94,23 @@ class User extends Model {
 
     return result;
   }
+
+  // 更新用户信息
+  static async updateUserInfo(params) {
+    const result = await User.update(
+      {
+        nickname: params.nickname,
+        profession: params.profession,
+        signature: params.signature,
+        avatar: params.avatar,
+      },
+      {
+        where: { id: params.uid },
+      }
+    );
+
+    return result;
+  }
 }
 
 User.init(

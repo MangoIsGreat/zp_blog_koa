@@ -538,4 +538,24 @@ router.get("/dynamic", new Auth().getUID, async (ctx, next) => {
   };
 });
 
+// 更新用户信息
+router.post("/updateUserInfo", new Auth().m, async (ctx, next) => {
+  const { nickname, profession, signature, avatar, uid } = ctx.request.body;
+
+  const result = await User.updateUserInfo({
+    nickname,
+    profession,
+    signature,
+    avatar,
+    uid,
+  });
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: result,
+  };
+});
+
 module.exports = router;
