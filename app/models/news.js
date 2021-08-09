@@ -237,7 +237,7 @@ class News extends Model {
       include: [
         {
           model: User,
-          attributes: ["id", "nickname"],
+          attributes: ["id", "nickname", "avatar"],
         },
         {
           model: NewsType,

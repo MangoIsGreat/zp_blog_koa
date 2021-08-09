@@ -26,7 +26,7 @@ router.post("/create", new Auth().m, async (ctx, next) => {
 
 // 获取动态列表
 router.get("/list", new Auth().getUID, async (ctx, next) => {
-  let dynamicList = null;
+  let dynamicList = [];
   if (ctx.request.query.type !== "attention") {
     // 如果“动态”类型不为“关注”
     dynamicList = await Dynamic.getDynamicList(ctx.request.query);

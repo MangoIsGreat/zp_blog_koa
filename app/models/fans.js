@@ -87,6 +87,7 @@ class Fans extends Model {
       order: [["created_at", "DESC"]],
       where: {
         followers: uid,
+        isFollower: true,
       },
       limit: Number(pageSize),
       offset: (Number(pageIndex) - 1) * Number(pageSize),
@@ -109,6 +110,7 @@ class Fans extends Model {
       order: [["created_at", "DESC"]],
       where: {
         byFollowers: uid,
+        isFollower: true,
       },
       limit: Number(pageSize),
       offset: (Number(pageIndex) - 1) * Number(pageSize),
