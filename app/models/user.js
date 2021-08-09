@@ -61,6 +61,7 @@ class User extends Model {
     return await User.findOne({
       where: content,
       attributes: [
+        "id",
         "nickname",
         "avatar",
         "profession",

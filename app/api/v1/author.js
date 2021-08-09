@@ -77,6 +77,31 @@ router.get("/userinfo", new Auth().getUID, async (ctx, next) => {
 
   result.collections_num = collections.count;
 
+  // 标记当前用户是否是本人
+  let isSelf = false;
+  if (ctx.auth && ctx.auth.uid) {
+    if (result.id === ctx.auth.uid) isSelf = true;
+  }
+
+  result.isSelf = isSelf;
+
+  // 若当前用户不是自己，标记当前用户是否已经关注
+  if (!isSelf) {
+    let isAttention = false;
+    const attention = await Fans.findOne({
+      where: {
+        byFollowers: v.get("query.uid"),
+        followers: ctx.auth.uid,
+      },
+    });
+
+    if (attention && attention.isFollower) {
+      isAttention = true;
+    }
+
+    result.isAttention = isAttention;
+  }
+
   ctx.body = {
     code: 200,
     error_code: 0,
