@@ -10,7 +10,7 @@ const { Auth } = require("../../../middlewares/auth");
 const {
   CreateCollectionValidator,
   CollectionListValidator,
-  CollectBlogValidator
+  CollectBlogValidator,
 } = require("../../validators/validator");
 const router = new Router({
   prefix: "/v1/collect",
@@ -35,9 +35,24 @@ router.post("/create", new Auth().m, async (ctx, next) => {
 
 // 获取收藏集列表
 router.get("/list", new Auth().m, async (ctx, next) => {
-  const result = await Collection.getCollection({
+  let result = await Collection.getCollection({
     userId: ctx.auth.uid,
   });
+
+  result = JSON.parse(JSON.stringify(result));
+
+  for (let i = 0; i < result.length; i++) {
+    const his = await CollectHistory.findOne({
+      where: {
+        collectionId: result[i].id,
+        userId: ctx.auth.uid,
+      },
+    });
+
+    result[i].isCollection = false;
+
+    if (his) result[i].isCollection = true;
+  }
 
   ctx.body = {
     code: 200,

@@ -66,7 +66,6 @@ class Dynamic extends Model {
     // 获取的动态
     const dynamics = [];
     for (let i = 0; i < idols.length; i++) {
-      console.log(idols[i].byFollowers);
       const dyns = await Dynamic.findAll({
         order: [["created_at", "DESC"]],
         where: {

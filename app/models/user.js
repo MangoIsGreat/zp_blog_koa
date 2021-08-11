@@ -70,6 +70,7 @@ class User extends Model {
         "blogReadNum",
         "fansNum",
         "idolNum",
+        "created_at",
       ],
     });
   }

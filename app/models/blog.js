@@ -53,6 +53,69 @@ class Blog extends Model {
     return blogs;
   }
 
+  // 获取关注人博客
+  static async getAttentionBlogList(uid, status, pageIndex, pageSize) {
+    let idols = await Fans.findAll({
+      where: {
+        followers: uid,
+        isFollower: true,
+      },
+    });
+
+    const blogs = [];
+    for (let i = 0; i < idols.length; i++) {
+      const blog = await Blog.findAll({
+        where: {
+          author: idols[i].byFollowers,
+        },
+        include: [
+          {
+            model: User,
+            attributes: ["nickname", "avatar", "id"],
+          },
+          {
+            model: Tag,
+            attributes: ["tagName"],
+          },
+        ],
+        attributes: [
+          "author",
+          "blogLikeNum",
+          "blogReadNum",
+          "created_at",
+          "description",
+          "id",
+          "tag",
+          "title",
+          "titlePic",
+          "updated_at",
+          "commentNum",
+        ],
+      });
+
+      blogs.push(...blog);
+    }
+
+    // 排序
+    if (status === "new") {
+      blogs.sort(function (a, b) {
+        return b.updated_at - a.updated_at;
+      });
+    } else {
+      blogs.sort(function (a, b) {
+        return b.blogReadNum - a.blogReadNum;
+      });
+    }
+
+    // 分页
+    let oBlogs = blogs.slice(Number(pageIndex) - 1, Number(pageSize));
+
+    return {
+      count: oBlogs,
+      rows: blogs,
+    };
+  }
+
   // 热门文章推荐
   static async getHotList(content) {
     const blog = await Blog.findOne({

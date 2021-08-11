@@ -48,7 +48,7 @@ class Forbidden extends HttpException {
     super();
     this.msg = msg || "禁止访问";
     this.errorCode = errorCode || 10006;
-    this.code = 403;
+    this.code = 200;
   }
 }
 

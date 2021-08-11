@@ -25,6 +25,7 @@ app.use(koaStatic(path.join(__dirname, "./uploads/article")));
 app.use(koaStatic(path.join(__dirname, "./uploads/avatar")));
 app.use(koaStatic(path.join(__dirname, "./uploads/circle")));
 app.use(koaStatic(path.join(__dirname, "./uploads/news")));
+app.use(koaStatic(path.join(__dirname, "./uploads/content")));
 
 // 注册全局异常处理中间件：
 app.use(catchError);

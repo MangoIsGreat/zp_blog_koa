@@ -29,6 +29,8 @@ router.post("/upload", new Auth().m, async (ctx, next) => {
     dirName = "../../../uploads/circle";
   } else if (v.get("body.type") === "news") {
     dirName = "../../../uploads/news";
+  } else if (v.get("body.type") === "content") {
+    dirName = "../../../uploads/content";
   }
 
   const dest = path.join(__dirname, dirName, fileName); // 目标目录，没有没有这个文件夹会自动创建

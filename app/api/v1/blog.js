@@ -31,22 +31,36 @@ router.post("/create", new Auth().m, async (ctx, next) => {
 // 获取博客列表
 router.get("/list", new Auth().getUID, async (ctx, next) => {
   let params = {};
-  const { tag, rankingType, pageIndex, pageSize } = ctx.query;
+  let { tag, rankingType, pageIndex, pageSize } = ctx.query;
+
+  tag = Number(tag);
 
   // 根据标签类型查找
   if (tag) {
-    params["tag"] = tag * 1; //隐式类型转换
+    params["tag"] = tag;
   }
 
   // 如果为推荐类型：
-  if (tag * 1 === 10000) params = null;
+  if (tag === 10000) params = null;
 
-  let blogList = await Blog.getHomePageBlogList(
-    { where: params },
-    rankingType,
-    pageIndex,
-    pageSize
-  );
+  let blogList = [];
+  // 如果为关注类型
+  if (tag === 10001) {
+    if (!ctx.auth || !ctx.auth.uid) return;
+    blogList = await Blog.getAttentionBlogList(
+      ctx.auth.uid,
+      rankingType,
+      pageIndex,
+      pageSize
+    );
+  } else {
+    blogList = await Blog.getHomePageBlogList(
+      { where: params },
+      rankingType,
+      pageIndex,
+      pageSize
+    );
+  }
 
   let records = null;
   if (ctx.auth && ctx.auth.uid) {
