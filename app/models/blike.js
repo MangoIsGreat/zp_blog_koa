@@ -86,6 +86,7 @@ class BLike extends Model {
   // 获取某个作者点赞过的博客记录
   static async getUserLike({ pageIndex, pageSize, uid }) {
     const result = await BLike.findAndCountAll({
+      order: [["created_at", "DESC"]],
       where: {
         user: uid,
         isLike: true,
@@ -118,6 +119,10 @@ class BLike extends Model {
             "blogReadNum",
             "commentNum",
           ],
+        },
+        {
+          model: User,
+          attributes: ["id", "nickname", "avatar", "profession"],
         },
       ],
     });
@@ -154,6 +159,10 @@ BLike.init(
 
 sequelize.models.BLike.belongsTo(Blog, {
   foreignKey: "blog",
+});
+
+sequelize.models.BLike.belongsTo(User, {
+  foreignKey: "user",
 });
 
 module.exports = {

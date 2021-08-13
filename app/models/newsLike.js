@@ -6,6 +6,7 @@
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 const { News } = require("./news");
+const { User } = require("./user");
 
 class NewsLike extends Model {
   // 点赞资讯功能：
@@ -72,6 +73,7 @@ class NewsLike extends Model {
   // 获取某个作者点赞过的资讯记录
   static async getUserLike({ pageIndex, pageSize, uid }) {
     const result = await NewsLike.findAndCountAll({
+      order: [["created_at", "DESC"]],
       where: {
         user: uid,
         isLike: true,
@@ -108,6 +110,10 @@ class NewsLike extends Model {
             "updated_at",
           ],
         },
+        {
+          model: User,
+          attributes: ["id", "nickname", "avatar", "profession"],
+        },
       ],
     });
 
@@ -143,6 +149,10 @@ NewsLike.init(
 
 sequelize.models.NewsLike.belongsTo(News, {
   foreignKey: "newsId",
+});
+
+sequelize.models.NewsLike.belongsTo(User, {
+  foreignKey: "user",
 });
 
 module.exports = {

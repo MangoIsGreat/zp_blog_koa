@@ -6,6 +6,7 @@
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 const { Dynamic } = require("./dynamic");
+const { User } = require("./user");
 
 class DLike extends Model {
   // 点赞动态功能：
@@ -72,6 +73,7 @@ class DLike extends Model {
   // 获取某个作者点赞过的"动态"记录
   static async getUserLike({ pageIndex, pageSize, uid }) {
     const result = await DLike.findAndCountAll({
+      order: [["created_at", "DESC"]],
       where: {
         user: uid,
         isLike: true,
@@ -103,6 +105,10 @@ class DLike extends Model {
             "commNum",
             "picUrl",
           ],
+        },
+        {
+          model: User,
+          attributes: ["id", "nickname", "avatar", "profession"],
         },
       ],
     });
@@ -139,6 +145,10 @@ DLike.init(
 
 sequelize.models.DLike.belongsTo(Dynamic, {
   foreignKey: "dynamic",
+});
+
+sequelize.models.DLike.belongsTo(User, {
+  foreignKey: "user",
 });
 
 module.exports = {

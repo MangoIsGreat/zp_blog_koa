@@ -50,6 +50,7 @@ class Collection extends Model {
   // 获取某个用户的收藏夹列表
   static async getCollections({ pageIndex, pageSize, uid }) {
     const result = await Collection.findAndCountAll({
+      order: [["created_at", "DESC"]],
       where: {
         userId: uid,
       },

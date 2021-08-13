@@ -64,10 +64,9 @@ class Dynamic extends Model {
     });
 
     // 获取的动态
-    const dynamics = [];
+    let dynamics = [];
     for (let i = 0; i < idols.length; i++) {
       const dyns = await Dynamic.findAll({
-        order: [["created_at", "DESC"]],
         where: {
           author: idols[i].byFollowers,
         },
@@ -78,8 +77,6 @@ class Dynamic extends Model {
             attributes: ["nickname", "id", "avatar", "profession", "signature"],
           },
         ],
-        limit: Number(content.pageSize),
-        offset: (Number(content.pageIndex) - 1) * Number(content.pageSize),
       });
 
       dynamics.push(...dyns);
@@ -88,6 +85,8 @@ class Dynamic extends Model {
     dynamics.sort(function (a, b) {
       return b.created_at - a.created_at;
     });
+
+    dynamics = dynamics.slice((Number(content.pageIndex) - 1), Number(content.pageSize));
 
     return dynamics;
   }
@@ -219,6 +218,7 @@ class Dynamic extends Model {
   // 获取某个作者的动态列表
   static async getUserDynList(params) {
     const dynamic = await Dynamic.findAndCountAll({
+      order: [["created_at", "DESC"]],
       limit: Number(params.pageSize),
       offset: (Number(params.pageIndex) - 1) * Number(params.pageSize),
       where: {
@@ -231,7 +231,7 @@ class Dynamic extends Model {
           attributes: ["id", "nickname", "avatar"],
         },
       ],
-      attributes: ["id", "theme", "content", "likeNum", "commNum", "picUrl"],
+      attributes: ["id", "theme", "content", "likeNum", "commNum", "picUrl", "created_at"],
     });
 
     return dynamic;
@@ -241,7 +241,7 @@ class Dynamic extends Model {
   static async getLikeDyn(dynId) {
     const result = await Dynamic.findOne({
       where: { id: dynId },
-      attributes: ["id", "theme", "content", "likeNum", "commNum", "picUrl"],
+      attributes: ["id", "theme", "content", "likeNum", "commNum", "picUrl", "created_at"],
       include: [
         {
           as: "userInfo",

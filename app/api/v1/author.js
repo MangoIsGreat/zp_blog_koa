@@ -147,7 +147,10 @@ router.get("/artlist", new Auth().getUID, async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: listData,
+    data: {
+      count: listData.count,
+      list: listData.rows,
+    },
   };
 });
 
@@ -211,7 +214,10 @@ router.get("/dynlist", new Auth().getUID, async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: listData,
+    data: {
+      count: listData.count,
+      list: listData.rows,
+    },
   };
 });
 
@@ -254,8 +260,10 @@ router.get("/likeBlog", new Auth().getUID, async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: result,
-    count: listData.count,
+    data: {
+      list: result,
+      count: listData.count,
+    },
   };
 });
 
@@ -326,8 +334,10 @@ router.get("/likeDyn", new Auth().getUID, async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: result,
-    count: listData.count,
+    data: {
+      list: result,
+      count: listData.count,
+    },
   };
 });
 
@@ -348,8 +358,10 @@ router.get("/likeNews", new Auth().getUID, async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: result,
-    count: listData.count,
+    data: {
+      list: result,
+      count: listData.count,
+    },
   };
 });
 
@@ -363,7 +375,10 @@ router.get("/collection", new Auth().getUID, async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: result,
+    data: {
+      list: result.rows,
+      count: result.count,
+    },
   };
 });
 
@@ -398,7 +413,10 @@ router.get("/byfollowers", new Auth().getUID, async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: result,
+    data: {
+      list: result.rows,
+      count: result.count,
+    },
   };
 });
 
@@ -433,7 +451,10 @@ router.get("/followers", new Auth().getUID, async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: result,
+    data: {
+      list: result.rows,
+      count: result.count,
+    },
   };
 });
 
@@ -550,7 +571,7 @@ router.get("/dynamic", new Auth().getUID, async (ctx, next) => {
     return b.created_at - a.created_at;
   });
 
-  infoData = infoData.slice(
+  const finalData = infoData.slice(
     (Number(pageIndex) - 1) * Number(pageSize),
     Number(pageIndex) * Number(pageSize)
   );
@@ -559,7 +580,10 @@ router.get("/dynamic", new Auth().getUID, async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    data: infoData,
+    data: {
+      count: infoData.length,
+      list: finalData,
+    },
   };
 });
 

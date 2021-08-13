@@ -215,6 +215,7 @@ class News extends Model {
         "titlePic",
         "newsLikeNum",
         "newsReadNum",
+        "created_at",
       ],
       include: [
         {

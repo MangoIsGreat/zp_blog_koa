@@ -132,11 +132,17 @@ class Fans extends Model {
     const result = await Fans.findAll({
       where: {
         followers: uid,
+        isFollower: true
       },
       include: [
         {
           model: User,
           as: "beAttention",
+          attributes: ["id", "nickname", "avatar", "profession"],
+        },
+        {
+          model: User,
+          as: "attention",
           attributes: ["id", "nickname", "avatar", "profession"],
         },
       ],

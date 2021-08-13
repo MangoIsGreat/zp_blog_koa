@@ -18,7 +18,7 @@ class Blog extends Model {
     // 文章排序状态：
     let ranking = "blogReadNum";
 
-    if (status === "new") ranking = "updated_at";
+    if (status === "new") ranking = "created_at";
 
     const blogs = await Blog.findAndCountAll({
       where,
@@ -99,7 +99,7 @@ class Blog extends Model {
     // 排序
     if (status === "new") {
       blogs.sort(function (a, b) {
-        return b.updated_at - a.updated_at;
+        return b.created_at - a.created_at;
       });
     } else {
       blogs.sort(function (a, b) {
@@ -355,6 +355,7 @@ class Blog extends Model {
         "blogLikeNum",
         "blogReadNum",
         "commentNum",
+        "created_at",
       ],
     });
 
@@ -373,6 +374,7 @@ class Blog extends Model {
         "blogLikeNum",
         "blogReadNum",
         "commentNum",
+        "created_at"
       ],
       include: [
         {
