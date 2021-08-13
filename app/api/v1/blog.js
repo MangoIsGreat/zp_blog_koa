@@ -192,4 +192,32 @@ router.get("/article", new Auth().getUID, async (ctx, next) => {
   };
 });
 
+// 获取某一条动态
+router.post("/delete", new Auth().m, async (ctx, next) => {
+  const v = await new RecommendValidator().validate(ctx);
+
+  const result = await Blog.deleteBlog(v.get("body.id"), ctx.auth.uid);
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: result,
+  };
+});
+
+// 获取某一篇博客
+router.get("/findBlog", new Auth().m, async (ctx, next) => {
+  const v = await new RecommendValidator().validate(ctx);
+
+  const result = await Blog.getBlog(v.get("query.id"), ctx.auth.uid);
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: result,
+  };
+});
+
 module.exports = router;

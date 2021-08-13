@@ -4,7 +4,7 @@ const { success } = require("../../lib/helper");
 const { Auth } = require("../../../middlewares/auth");
 const { Fans } = require("../../models/fans");
 const { DLike } = require("../../models/dlike");
-const { DynamicValidator } = require("../../validators/validator");
+const { DynamicValidator, DcommentListValidator } = require("../../validators/validator");
 const router = new Router({
   prefix: "/v1/dynamic",
 });
@@ -127,6 +127,20 @@ router.get("/dynamic", new Auth().getUID, async (ctx, next) => {
     error_code: 0,
     msg: "ok",
     data: hotBlogList,
+  };
+});
+
+// 获取某一条动态
+router.post("/delete", new Auth().m, async (ctx, next) => {
+  const v = await new DcommentListValidator().validate(ctx);
+
+  const result = await Dynamic.deleteDyn(v.get("body.dynamicId"), ctx.auth.uid);
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: result,
   };
 });
 

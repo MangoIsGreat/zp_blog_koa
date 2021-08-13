@@ -374,7 +374,7 @@ class Blog extends Model {
         "blogLikeNum",
         "blogReadNum",
         "commentNum",
-        "created_at"
+        "created_at",
       ],
       include: [
         {
@@ -420,6 +420,39 @@ class Blog extends Model {
     });
 
     return resut;
+  }
+
+  // 删除某一条博客
+  static async deleteBlog(id, uid) {
+    const result = await Blog.destroy({
+      where: {
+        id,
+        author: uid,
+      },
+    });
+
+    return result;
+  }
+
+  // 获取某一篇博客
+  static async getBlog(blogId, uid) {
+    const result = await Blog.findOne({
+      where: {
+        id: blogId,
+        author: uid,
+      },
+      attributes: [
+        "id",
+        "title",
+        "content",
+        "description",
+        "author",
+        "tag",
+        "titlePic",
+      ],
+    });
+
+    return result;
   }
 }
 

@@ -231,7 +231,7 @@ router.get("/likeBlog", new Auth().getUID, async (ctx, next) => {
   for (let i = 0; i < listData.rows.length; i++) {
     const tmp = await Blog.getLikeBlog(listData.rows[i].blog);
 
-    result.push(tmp);
+    tmp && result.push(tmp);
   }
 
   result = JSON.parse(JSON.stringify(result));
@@ -277,7 +277,7 @@ router.get("/likeDyn", new Auth().getUID, async (ctx, next) => {
   for (let i = 0; i < listData.rows.length; i++) {
     const tmp = await Dynamic.getLikeDyn(listData.rows[i].dynamic);
 
-    result.push(tmp);
+    tmp && result.push(tmp);
   }
 
   result = JSON.parse(JSON.stringify(result));
@@ -396,7 +396,7 @@ router.get("/byfollowers", new Auth().getUID, async (ctx, next) => {
     if (ctx.auth && ctx.auth.uid) {
       const attention = await Fans.findOne({
         where: {
-          byFollowers: result.rows[i].id,
+          byFollowers: result.rows[i].beAttention.id,
           followers: ctx.auth.uid,
         },
       });
@@ -434,8 +434,8 @@ router.get("/followers", new Auth().getUID, async (ctx, next) => {
     if (ctx.auth && ctx.auth.uid) {
       const attention = await Fans.findOne({
         where: {
-          byFollowers: result.rows[i].id,
-          followers: ctx.auth.uid,
+          byFollowers: ctx.auth.uid,
+          followers: result.rows[i].attention.id,
         },
       });
 
@@ -568,7 +568,8 @@ router.get("/dynamic", new Auth().getUID, async (ctx, next) => {
 
   // 按时间先后排序
   infoData.sort(function (a, b) {
-    return b.created_at - a.created_at;
+    // return b.created_at - a.created_at;
+    return b.created_at < a.created_at ? -1 : 1;
   });
 
   const finalData = infoData.slice(

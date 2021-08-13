@@ -86,7 +86,10 @@ class Dynamic extends Model {
       return b.created_at - a.created_at;
     });
 
-    dynamics = dynamics.slice((Number(content.pageIndex) - 1), Number(content.pageSize));
+    dynamics = dynamics.slice(
+      Number(content.pageIndex) - 1,
+      Number(content.pageSize)
+    );
 
     return dynamics;
   }
@@ -129,7 +132,7 @@ class Dynamic extends Model {
     });
 
     // 获取动态的作者
-    const author = dynamic.author;
+    const author = dynamic && dynamic.author;
 
     // 查看当前用户和动态作者是否已经建立“关注”关系
     const attention = await Fans.findOne({
@@ -201,16 +204,18 @@ class Dynamic extends Model {
     dynamics = JSON.parse(JSON.stringify(dynamics));
 
     // 当前用户是否点赞该博客
-    dynamics.isLike = false;
+    if (dynamics) {
+      dynamics.isLike = false;
+
+      // 是否已关注
+      dynamics.User.isAttention = isAttention;
+      // 是否作者是当前用户本人
+      dynamics.User.isSelf = isSelf;
+    }
 
     if (dynamicStatus && dynamicStatus.isLike) {
       dynamics.isLike = true;
     }
-
-    // 是否已关注
-    dynamics.User.isAttention = isAttention;
-    // 是否作者是当前用户本人
-    dynamics.User.isSelf = isSelf;
 
     return dynamics;
   }
@@ -228,10 +233,18 @@ class Dynamic extends Model {
         {
           as: "userInfo",
           model: User,
-          attributes: ["id", "nickname", "avatar"],
+          attributes: ["id", "nickname", "avatar", "profession"],
         },
       ],
-      attributes: ["id", "theme", "content", "likeNum", "commNum", "picUrl", "created_at"],
+      attributes: [
+        "id",
+        "theme",
+        "content",
+        "likeNum",
+        "commNum",
+        "picUrl",
+        "created_at",
+      ],
     });
 
     return dynamic;
@@ -241,7 +254,15 @@ class Dynamic extends Model {
   static async getLikeDyn(dynId) {
     const result = await Dynamic.findOne({
       where: { id: dynId },
-      attributes: ["id", "theme", "content", "likeNum", "commNum", "picUrl", "created_at"],
+      attributes: [
+        "id",
+        "theme",
+        "content",
+        "likeNum",
+        "commNum",
+        "picUrl",
+        "created_at",
+      ],
       include: [
         {
           as: "userInfo",
@@ -274,6 +295,18 @@ class Dynamic extends Model {
           attributes: ["id", "nickname", "avatar"],
         },
       ],
+    });
+
+    return result;
+  }
+
+  // 删除某一条动态
+  static async deleteDyn(id, uid) {
+    const result = await Dynamic.destroy({
+      where: {
+        id,
+        author: uid,
+      },
     });
 
     return result;
