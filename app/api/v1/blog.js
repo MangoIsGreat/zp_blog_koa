@@ -192,7 +192,7 @@ router.get("/article", new Auth().getUID, async (ctx, next) => {
   };
 });
 
-// 获取某一条动态
+// 删除博客
 router.post("/delete", new Auth().m, async (ctx, next) => {
   const v = await new RecommendValidator().validate(ctx);
 

@@ -4,6 +4,8 @@ const { User } = require("./user");
 const { Tag } = require("./tag");
 const { Fans } = require("./fans");
 const { CollectHistory } = require("./collectHistory");
+const { Collection } = require("./collection");
+const { ReadHistory } = require("./readHistory");
 
 class Blog extends Model {
   // 创建博客
@@ -131,6 +133,12 @@ class Blog extends Model {
       },
       limit: 5,
       attributes: ["id", "title", "author", "tag", "blogLikeNum", "commentNum"],
+      include: [
+        {
+          model: User,
+          attributes: ["nickname", "avatar", "id"],
+        },
+      ],
     });
 
     return list;
@@ -143,16 +151,6 @@ class Blog extends Model {
         id: blogID,
       },
     });
-
-    // 多表查询(一对多)
-    // Blog.belongsTo(User, {
-    //   foreignKey: "author",
-    // });
-
-    // Blog.belongsTo(Tag, {
-    //   foreignKey: "tag",
-    //   targetKey: "tagType",
-    // });
 
     const list = await Blog.findAndCountAll({
       order: [["blogReadNum", "DESC"]],
@@ -190,24 +188,22 @@ class Blog extends Model {
 
   // 获取某一篇文章
   static async getArticle(blogId, uid) {
-    // 多表查询(一对多)
-    // Blog.belongsTo(User, {
-    //   foreignKey: "author",
-    // });
-
-    // Blog.belongsTo(Tag, {
-    //   foreignKey: "tag",
-    //   targetKey: "tagType",
-    // });
-
     const blog = await Blog.findOne({
       where: {
         id: blogId,
       },
     });
 
+    if (uid) {
+      await ReadHistory.setHistory({
+        blog: blogId,
+        user: uid,
+      });
+    }
+
     // 获取博客的作者
-    const author = blog.author;
+    let author = "";
+    author = blog ? blog.author : "";
 
     // 查看当前用户和博客作者是否已经建立“关注”关系
     const attention = await Fans.findOne({
@@ -431,6 +427,23 @@ class Blog extends Model {
       },
     });
 
+    // 删除博客后，该用户相应收藏夹文章数-1
+    const histories = await CollectHistory.findAll({
+      where: {
+        blogId: id,
+      },
+    });
+
+    for (let i = 0; i < histories.length; i++) {
+      const collection = await Collection.findOne({
+        where: {
+          id: histories[i].collectionId,
+        },
+      });
+
+      await collection.decrement("number", { by: 1 });
+    }
+
     return result;
   }
 
@@ -449,6 +462,74 @@ class Blog extends Model {
         "author",
         "tag",
         "titlePic",
+      ],
+    });
+
+    return result;
+  }
+
+  // 获取某一篇博客
+  static async getOneBlog(blogId) {
+    const data = await Blog.findOne({
+      where: {
+        id: blogId,
+      },
+      attributes: [
+        "author",
+        "blogLikeNum",
+        "blogReadNum",
+        "created_at",
+        "description",
+        "id",
+        "tag",
+        "title",
+        "titlePic",
+        "updated_at",
+        "commentNum",
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nickname", "avatar"],
+        },
+        {
+          model: Tag,
+          attributes: ["tagName"],
+        },
+      ],
+    });
+
+    return data;
+  }
+
+  // 获取用户浏览博客记录
+  static async getReadBlog(blogId) {
+    const result = await Blog.findOne({
+      where: {
+        id: blogId,
+      },
+      attributes: [
+        "author",
+        "blogLikeNum",
+        "blogReadNum",
+        "created_at",
+        "description",
+        "id",
+        "tag",
+        "title",
+        "titlePic",
+        "updated_at",
+        "commentNum",
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nickname", "avatar"],
+        },
+        {
+          model: Tag,
+          attributes: ["tagName"],
+        },
       ],
     });
 

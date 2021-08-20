@@ -6,6 +6,8 @@
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 const { Collection } = require("./collection");
+const { Blog } = require("./blog");
+const { User } = require("./user");
 
 class CollectHistory extends Model {
   // 收藏博客
@@ -52,11 +54,10 @@ class CollectHistory extends Model {
   static async getCollectionBlog(content) {
     const result = await CollectHistory.findAndCountAll({
       where: {
-        userId: content.userId,
         collectionId: content.collectionId,
       },
-      limit: content.pageSize,
-      offset: (content.pageIndex - 1) * content.pageSize,
+      limit: Number(content.pageSize),
+      offset: (Number(content.pageIndex) - 1) * Number(content.pageSize),
     });
 
     return result;

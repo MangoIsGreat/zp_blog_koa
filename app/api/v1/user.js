@@ -20,7 +20,8 @@ router.post("/login", async (ctx) => {
 
   let token;
   let data;
-  switch (v.get("body.type")) {
+  let type = Number(v.get("body.type"));
+  switch (type) {
     case LoginType.USER_EMAIL:
       token = await emailLogin(v.get("body.account"), v.get("body.secret"));
 

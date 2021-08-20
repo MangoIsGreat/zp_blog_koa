@@ -5,6 +5,7 @@
  */
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
+const { User } = require("./user");
 
 class Collection extends Model {
   static async createCollection(content) {
@@ -61,6 +62,53 @@ class Collection extends Model {
 
     return result;
   }
+
+  // 获取某个收藏夹的信息
+  static async getCollectionInfo(collectionId) {
+    const data = await Collection.findOne({
+      where: {
+        id: collectionId,
+      },
+      attributes: ["id", "userId", "type", "number"],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nickname", "avatar"],
+        },
+      ],
+    });
+
+    return data;
+  }
+
+  // 更新某个收藏夹的名字
+  static async updateName(cid, uid, name) {
+    const result = await Collection.update(
+      {
+        type: name,
+      },
+      {
+        where: {
+          id: cid,
+          userId: uid,
+        },
+      }
+    );
+
+    return result;
+  }
+
+  // 删除收藏夹
+  static async deleteCollection(cid, uid) {
+    const result = await Collection.destroy({
+      where: {
+        id: cid,
+        userId: uid,
+      },
+    });
+
+    return result;
+  }
 }
 
 Collection.init(
@@ -89,6 +137,11 @@ Collection.init(
     tableName: "collection",
   }
 );
+
+// 建立表关联关系
+sequelize.models.Collection.belongsTo(User, {
+  foreignKey: "userId",
+});
 
 module.exports = {
   Collection,

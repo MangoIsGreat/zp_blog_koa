@@ -47,6 +47,18 @@ class User extends Model {
   static async getLoginUserInfo(account) {
     return await User.findOne({
       where: { email: account },
+      attributes: [
+        "id",
+        "nickname",
+        "avatar",
+        "profession",
+        "signature",
+        "blogLikeNum",
+        "blogReadNum",
+        "fansNum",
+        "idolNum",
+        "created_at",
+      ],
     });
   }
 
