@@ -55,6 +55,40 @@ class Blog extends Model {
     return blogs;
   }
 
+  // 获取博客列表（管理后台）
+  static async getAllBlogList(pageIndex, pageSize) {
+    const blogs = await Blog.findAndCountAll({
+      order: [["created_at", "DESC"]],
+      offset: (Number(pageIndex) - 1) * Number(pageSize),
+      limit: Number(pageSize),
+      include: [
+        {
+          model: User,
+          attributes: ["nickname", "id", "avatar"],
+        },
+        {
+          model: Tag,
+          attributes: ["tagName", "tagType"],
+        },
+      ],
+      attributes: [
+        "author",
+        "blogLikeNum",
+        "blogReadNum",
+        "created_at",
+        "description",
+        "id",
+        "tag",
+        "title",
+        "titlePic",
+        "updated_at",
+        "commentNum",
+      ],
+    });
+
+    return blogs;
+  }
+
   // 获取关注人博客
   static async getAttentionBlogList(uid, status, pageIndex, pageSize) {
     let idols = await Fans.findAll({

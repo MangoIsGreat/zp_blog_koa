@@ -1,5 +1,6 @@
 const { LinValidator, Rule } = require("../../core/lin-validator-v2");
 const { User } = require("../models/user");
+const { Admin } = require("../models/admin");
 const { LoginType } = require("../lib/enum");
 
 class PositiveIntegerValidator extends LinValidator {
@@ -54,6 +55,43 @@ class RegisterValidator extends LinValidator {
   }
 }
 
+class AdminRegisterValidator extends LinValidator {
+  constructor() {
+    super();
+    this.email = [new Rule("isEmail", "不符合Email规范")];
+    this.password = [
+      new Rule("isLength", "密码至少6个字符，最多20个字符", {
+        min: 6,
+        max: 20,
+      }),
+      new Rule(
+        "matches",
+        "密码长度必须在6~22位之间，包含字符、数字或则 _",
+        "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]"
+      ),
+    ];
+    this.nickname = [
+      new Rule("isLength", "昵称不符合长度规范", {
+        min: 2,
+        max: 32,
+      }),
+    ];
+  }
+
+  async validateEmail(vals) {
+    const email = vals.body.email;
+    const user = await Admin.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (user) {
+      throw new Error("email已存在");
+    }
+  }
+}
+
 class TokenValidator extends LinValidator {
   constructor() {
     super();
@@ -79,6 +117,25 @@ class TokenValidator extends LinValidator {
     if (!LoginType.isThisType(vals.body.type)) {
       throw new Error("type参数不合法");
     }
+  }
+}
+
+class AdminTokenValidator extends LinValidator {
+  constructor() {
+    super();
+    this.account = [
+      new Rule("isLength", "不符合账号规则", {
+        min: 4,
+        max: 32,
+      }),
+    ];
+    this.secret = [
+      new Rule("isOptional"),
+      new Rule("isLength", "至少6个字符", {
+        min: 6,
+        max: 128,
+      }),
+    ];
   }
 }
 
@@ -386,4 +443,6 @@ module.exports = {
   NewsValidator,
   RecommendNewsValidator,
   AuthorUIDValidator,
+  AdminRegisterValidator,
+  AdminTokenValidator,
 };
