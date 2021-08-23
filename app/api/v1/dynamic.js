@@ -130,7 +130,7 @@ router.get("/dynamic", new Auth().getUID, async (ctx, next) => {
   };
 });
 
-// 获取某一条动态
+// 删除某一条动态
 router.post("/delete", new Auth().m, async (ctx, next) => {
   const v = await new DcommentListValidator().validate(ctx);
 

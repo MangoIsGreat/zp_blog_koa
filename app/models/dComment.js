@@ -86,6 +86,58 @@ class DComment extends Model {
 
     return result;
   }
+
+  static async getAdminList({ dynamicId, pageIndex, pageSize }) {
+    let result = await DComment.findAndCountAll({
+      order: [["created_at", "DESC"]],
+      where: { dynamicId },
+      offset: (Number(pageIndex) - 1) * Number(pageSize),
+      limit: Number(pageSize),
+      attributes: [
+        "id",
+        "dynamicId",
+        "content",
+        "created_at",
+        "fromId",
+        "likeNum",
+      ],
+      include: [
+        {
+          model: sequelize.models.User,
+          as: "userInfo",
+          attributes: ["nickname", "id", "avatar", "profession", "signature"],
+        },
+      ],
+    });
+
+    return result;
+  }
+
+  static async deleteComment({ commentId }) {
+    const comment = await DComment.findOne({
+      where: {
+        id: commentId,
+      },
+    });
+
+    if (comment) {
+      const dynamic = await Dynamic.findOne({
+        where: {
+          id: comment.dynamicId,
+        },
+      });
+
+      dynamic && await dynamic.decrement("commNum", { by: 1 });
+    }
+
+    const result = await DComment.destroy({
+      where: {
+        id: commentId,
+      },
+    });
+
+    return result;
+  }
 }
 
 DComment.init(

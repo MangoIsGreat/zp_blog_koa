@@ -11,6 +11,24 @@ class News extends Model {
     return news;
   }
 
+  // 删除资讯
+  static async deleteNews(id) {
+    const result = await News.destroy({
+      where: {
+        id,
+      },
+    });
+
+    return result;
+  }
+
+  // 更新资讯
+  static async updateNews({ id, title, content, description, tag }) {
+    await News.update({ title, content, description, tag }, { where: { id } });
+
+    return "ok";
+  }
+
   // 获取资讯列表
   static async getHomePageNewsList({ where }, status, pageIndex, pageSize) {
     // 文章排序状态(默认按阅读量排序)：
@@ -232,9 +250,95 @@ class News extends Model {
     return result;
   }
 
+  static async getOneNews(newsId) {
+    let newsItem = await News.findOne({
+      where: {
+        id: newsId,
+      },
+      include: [
+        {
+          model: User,
+          attributes: [
+            "id",
+            "nickname",
+            "avatar",
+            "profession",
+            "signature",
+            "fansNum",
+            "idolNum",
+          ],
+        },
+        {
+          model: NewsType,
+          attributes: ["tagName", "id", "tagType"],
+        },
+      ],
+      attributes: [
+        "id",
+        "title",
+        "content",
+        "author",
+        "titlePic",
+        "newsLikeNum",
+        "newsReadNum",
+        "created_at",
+        "updated_at",
+      ],
+    });
+
+    return newsItem;
+  }
+
   // 获取作者发表的所有资讯
   static async getUserNews() {
     const result = await News.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nickname", "avatar"],
+        },
+        {
+          model: NewsType,
+          attributes: ["tagName"],
+        },
+      ],
+      attributes: [
+        "author",
+        "newsLikeNum",
+        "newsReadNum",
+        "created_at",
+        "description",
+        "id",
+        "tag",
+        "title",
+        "titlePic",
+        "updated_at",
+        "created_at",
+      ],
+    });
+
+    return result;
+  }
+
+  // 获取作者发表的所有资讯
+  static async getNewsList({ pageIndex, pageSize, newsId, author, type }) {
+    const params = {};
+    if (newsId) {
+      params.id = newsId;
+    }
+
+    if (author) {
+      params.author = author;
+    }
+
+    if (type) {
+      params.tag = type;
+    }
+
+    const result = await News.findAndCountAll({
+      where: { ...params },
+      offset: (Number(pageIndex) - 1) * Number(pageSize),
+      limit: Number(pageSize),
       include: [
         {
           model: User,

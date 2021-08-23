@@ -54,6 +54,53 @@ class Dynamic extends Model {
     return dynamic;
   }
 
+  // 获取动态列表（管理后台）
+  static async getAllDynamicList({
+    pageIndex,
+    pageSize,
+    dynId,
+    author,
+    theme,
+  }) {
+    const params = {};
+    if (dynId) {
+      params.id = dynId;
+    }
+
+    if (author) {
+      params.author = author;
+    }
+
+    if (theme) {
+      params.theme = theme;
+    }
+
+    const dynamics = await Dynamic.findAndCountAll({
+      where: { ...params },
+      order: [["created_at", "DESC"]],
+      offset: (Number(pageIndex) - 1) * Number(pageSize),
+      limit: Number(pageSize),
+      include: [
+        {
+          model: sequelize.models.User,
+          as: "userInfo",
+          attributes: ["nickname", "id", "avatar", "profession", "signature"],
+        },
+      ],
+      attributes: [
+        "id",
+        "theme",
+        "content",
+        "author",
+        "likeNum",
+        "commNum",
+        "picUrl",
+      ],
+    });
+
+    return dynamics;
+  }
+
   // 获取关注人动态列表
   static async getAttentionDynamic(content) {
     let idols = await Fans.findAll({
@@ -113,17 +160,66 @@ class Dynamic extends Model {
     return dynamic;
   }
 
+  static async getFavDynamicList() {
+    // 获取精选“动态”
+    const dynamic = await Dynamic.findAll({
+      order: [["likeNum", "DESC"]],
+      limit: 3,
+      attributes: [
+        "id",
+        "theme",
+        "content",
+        "author",
+        "likeNum",
+        "commNum",
+        "picUrl",
+      ],
+    });
+
+    return dynamic;
+  }
+
+  static async getOneDynamic({ id }) {
+    // 获取精选“动态”
+    const dynamic = await Dynamic.findOne({
+      where: { id },
+      attributes: [
+        "id",
+        "theme",
+        "content",
+        "author",
+        "likeNum",
+        "commNum",
+        "picUrl",
+      ],
+    });
+
+    return dynamic;
+  }
+
+  static async updateDyn({ id, theme, content }) {
+    const params = {};
+
+    if (theme) {
+      params.theme = theme;
+    }
+
+    if (content) {
+      params.content = content;
+    }
+
+    // 更新动态
+    await Dynamic.update({ ...params }, { where: { id } });
+
+    return "ok";
+  }
+
   // 获取某一条动态
   static async getDynamic(dynamicId, uid) {
     // 多表查询(一对多)
     Dynamic.belongsTo(User, {
       foreignKey: "author",
     });
-
-    // Dynamic.belongsTo(Tag, {
-    //   foreignKey: "tag",
-    //   targetKey: "tagType",
-    // });
 
     const dynamic = await Dynamic.findOne({
       where: {
@@ -183,10 +279,6 @@ class Dynamic extends Model {
             "idolNum",
           ],
         },
-        // {
-        //   model: Tag,
-        //   attributes: ["tagName", "id"],
-        // },
       ],
       attributes: [
         "id",
@@ -306,6 +398,17 @@ class Dynamic extends Model {
       where: {
         id,
         author: uid,
+      },
+    });
+
+    return result;
+  }
+
+  // 删除某一条动态(管理后台)
+  static async deleteAdminDyn(id) {
+    const result = await Dynamic.destroy({
+      where: {
+        id,
       },
     });
 

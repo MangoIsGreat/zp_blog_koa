@@ -56,8 +56,22 @@ class Blog extends Model {
   }
 
   // 获取博客列表（管理后台）
-  static async getAllBlogList(pageIndex, pageSize) {
+  static async getAllBlogList({ pageIndex, pageSize, blogId, author, type }) {
+    const params = {};
+    if (blogId) {
+      params.id = blogId;
+    }
+
+    if (author) {
+      params.author = author;
+    }
+
+    if (type) {
+      params.tag = type;
+    }
+
     const blogs = await Blog.findAndCountAll({
+      where: { ...params },
       order: [["created_at", "DESC"]],
       offset: (Number(pageIndex) - 1) * Number(pageSize),
       limit: Number(pageSize),
@@ -83,6 +97,7 @@ class Blog extends Model {
         "titlePic",
         "updated_at",
         "commentNum",
+        "isShow",
       ],
     });
 
@@ -481,6 +496,58 @@ class Blog extends Model {
     return result;
   }
 
+  // 删除某一条博客(管理后台)
+  static async deleteAdminBlog(id) {
+    const result = await Blog.destroy({
+      where: {
+        id,
+      },
+    });
+
+    // 删除博客后，该用户相应收藏夹文章数-1
+    const histories = await CollectHistory.findAll({
+      where: {
+        blogId: id,
+      },
+    });
+
+    for (let i = 0; i < histories.length; i++) {
+      const collection = await Collection.findOne({
+        where: {
+          id: histories[i].collectionId,
+        },
+      });
+
+      await collection.decrement("number", { by: 1 });
+    }
+
+    return result;
+  }
+
+  // 隐藏某一条博客(管理后台)
+  static async hiddenAdminBlog(id) {
+    const blog = await Blog.findOne({
+      id,
+    });
+
+    if (blog.isShow) {
+      await Blog.update({ isShow: false }, { where: { id } });
+
+      return 0;
+    }
+
+    await Blog.update({ isShow: true }, { where: { id } });
+
+    return 1;
+  }
+
+  // 更新某一条博客(管理后台)
+  static async updateAdminBlog({ id, title, content, description, tag }) {
+    await Blog.update({ title, content, description, tag }, { where: { id } });
+
+    return "ok";
+  }
+
   // 获取某一篇博客
   static async getBlog(blogId, uid) {
     const result = await Blog.findOne({
@@ -496,6 +563,41 @@ class Blog extends Model {
         "author",
         "tag",
         "titlePic",
+      ],
+    });
+
+    return result;
+  }
+
+  // 获取某一篇博客(后台管理系统)
+  static async getAdminBlog(blogId, uid) {
+    const result = await Blog.findOne({
+      where: {
+        id: blogId,
+      },
+      attributes: [
+        "author",
+        "blogLikeNum",
+        "blogReadNum",
+        "created_at",
+        "description",
+        "id",
+        "tag",
+        "title",
+        "titlePic",
+        "updated_at",
+        "commentNum",
+        "content",
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "nickname", "avatar"],
+        },
+        {
+          model: Tag,
+          attributes: ["tagName", "tagType"],
+        },
       ],
     });
 
@@ -612,6 +714,10 @@ Blog.init(
     commentNum: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
+    },
+    isShow: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
     },
   },
   {

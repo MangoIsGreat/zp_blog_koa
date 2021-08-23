@@ -10,7 +10,7 @@ const router = new Router({
   prefix: "/v1/cDlike",
 });
 
-// 点赞博客评论
+// 点赞动态评论
 router.post("/like", new Auth().m, async (ctx, next) => {
   const result = await CDLike.likeComment({
     commentId: ctx.request.body.commentId,

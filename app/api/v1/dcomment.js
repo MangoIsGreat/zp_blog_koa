@@ -89,10 +89,6 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
   for (let i = 0; i < result.length; i++) {
     result[i].isLike = false;
 
-    // 添加评论数量的字段信息
-    // const data = await BComment.getCommentList(blogList.rows[i].id);
-    // blogList.rows[i].commentNum = data.length;
-
     // 当前用户是否已经点赞该博客
     if (ctx.auth && ctx.auth.uid) {
       for (let j = 0; j < records.length; j++) {
@@ -115,6 +111,37 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
       }
     }
   }
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: result,
+  };
+});
+
+// 获取"动态评论"列表
+router.get("/admin/list", new Auth().m, async (ctx, next) => {
+  const { pageIndex, pageSize } = ctx.request.query;
+  const v = await new DcommentListValidator().validate(ctx);
+  const content = {
+    dynamicId: v.get("query.dynamicId"),
+  };
+
+  // 评论列表
+  let result = await DComment.getAdminList({ ...content, pageIndex, pageSize });
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: result,
+  };
+});
+
+// 删除"动态评论"
+router.post("/admin/delete", new Auth().m, async (ctx, next) => {
+  let result = await DComment.deleteComment(ctx.request.body);
 
   ctx.body = {
     code: 200,
