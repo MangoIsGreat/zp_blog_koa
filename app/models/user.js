@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const { sequelize } = require("../../core/db");
-
 const { Sequelize, Model } = require("sequelize");
+const Op = Sequelize.Op;
 
 class User extends Model {
   static async verifyEmailPassword(email, plainPassword) {
@@ -16,6 +16,10 @@ class User extends Model {
     const correct = bcrypt.compareSync(plainPassword, user.password);
     if (!correct) {
       throw new global.errs.AuthFailed("密码不正确");
+    }
+    // 判断账号是否被禁用
+    if (!user.isForbidden) {
+      throw new global.errs.AuthFailed("账号已经被禁用!");
     }
     return user;
   }
@@ -65,6 +69,55 @@ class User extends Model {
   async getUserAllRankList() {
     return await User.findAll({
       order: [["fansNum", "DESC"]],
+    });
+  }
+
+  // 封禁用户
+  static async forbidUser({ id }) {
+    const user = await User.findOne({
+      where: {
+        id,
+      },
+    });
+
+    console.log(55, user)
+
+    // 如果已经封禁,则解封
+    if (user.isForbidden) {
+      await User.update({ isForbidden: false }, { where: { id } });
+
+      return "解封成功!";
+    }
+
+    // 如果未封禁,则封禁
+    await User.update({ isForbidden: true }, { where: { id } });
+
+    return "封禁成功!";
+  }
+
+  static async getUserList({ pageIndex, pageSize, account, nickname }) {
+    let params = {};
+    if (account) {
+      params = {
+        email: {
+          [Op.like]: "%" + account + "%",
+        },
+      };
+    }
+
+    if (nickname) {
+      params = {
+        nickname: {
+          [Op.like]: "%" + nickname + "%",
+        },
+      };
+    }
+
+    return await User.findAndCountAll({
+      where: { ...params },
+      order: [["blogReadNum", "DESC"]],
+      limit: Number(pageSize),
+      offset: (Number(pageIndex) - 1) * Number(pageSize),
     });
   }
 
@@ -176,6 +229,10 @@ User.init(
     idolNum: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
+    },
+    isForbidden: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
     },
   },
   {

@@ -2,6 +2,7 @@ const Router = require("koa-router");
 const { generateToken } = require("../../../core/util");
 const { LoginType } = require("../../lib/enum");
 const { User } = require("../../models/user");
+const { Fans } = require("../../models/fans");
 const {
   TokenValidator,
   RegisterValidator,
@@ -86,19 +87,129 @@ router.get("/ranklist", async (ctx) => {
   };
 });
 
-// 获取用户信息
-router.get("/userInfo", new Auth().m, async (ctx) => {
-  const content = {
-    id: ctx.auth.uid,
-  };
-
-  const result = await User.findOne(content);
+// 获取用户列表
+router.get("/userlist", async (ctx) => {
+  const result = await User.getUserList(ctx.request.query);
 
   ctx.body = {
     code: 200,
     error_code: 0,
     msg: "ok",
     data: result,
+  };
+});
+
+// 获取用户信息
+router.get("/userInfo", new Auth().m, async (ctx) => {
+  const content = {
+    id: ctx.auth.uid,
+  };
+
+  const result = await User.findOne({ where: content });
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: result,
+  };
+});
+
+// 封禁用户
+router.post("/forbid", new Auth().m, async (ctx) => {
+  const result = await User.forbidUser(ctx.request.body);
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: result,
+  };
+});
+
+// 获取用户信息(管理后台)
+router.get("/admin/userInfo", new Auth().m, async (ctx) => {
+  const result = await User.findOne({
+    where: {
+      id: ctx.request.query.id,
+    },
+  });
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: result,
+  };
+});
+
+// 获取用户关注列表(管理后台)
+router.get("/admin/userInfo/attention", new Auth().m, async (ctx) => {
+  const { id, pageIndex, pageSize } = ctx.request.query;
+
+  const users = await Fans.findAll({
+    where: {
+      followers: id,
+      isFollower: true,
+    },
+    limit: Number(pageSize),
+    offset: (Number(pageIndex) - 1) * Number(pageSize),
+  });
+
+  const result = [];
+  for (let i = 0; i < users.length; i++) {
+    const data = await User.findOne({
+      where: {
+        id: users[i].byFollowers,
+      },
+    });
+
+    result.push(data);
+  }
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: {
+      count: result.length,
+      rows: result,
+    },
+  };
+});
+
+// 获取用户粉丝列表(管理后台)
+router.get("/admin/userInfo/fans", new Auth().m, async (ctx) => {
+  const { id, pageIndex, pageSize } = ctx.request.query;
+
+  const users = await Fans.findAll({
+    where: {
+      byFollowers: id,
+      isFollower: true,
+    },
+    limit: Number(pageSize),
+    offset: (Number(pageIndex) - 1) * Number(pageSize),
+  });
+
+  const result = [];
+  for (let i = 0; i < users.length; i++) {
+    const data = await User.findOne({
+      where: {
+        id: users[i].followers,
+      },
+    });
+
+    result.push(data);
+  }
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: {
+      count: result.length,
+      rows: result,
+    },
   };
 });
 

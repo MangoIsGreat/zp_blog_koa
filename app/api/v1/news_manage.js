@@ -1,8 +1,6 @@
 const Router = require("koa-router");
 const { News } = require("../../models/news");
-const { NewsLike } = require("../../models/newsLike");
 const { Auth } = require("../../../middlewares/auth");
-const { RecommendNewsValidator } = require("../../validators/validator");
 const router = new Router({
   prefix: "/v1/admin/news",
 });
