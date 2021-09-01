@@ -65,7 +65,9 @@ router.get("/ranking", new Auth().getUID, async (ctx, next) => {
 router.get("/userinfo", new Auth().getUID, async (ctx, next) => {
   const v = await new AuthorUIDValidator().validate(ctx);
 
-  let result = await User.getUserInfo({ id: v.get("query.uid") });
+  let result = {};
+
+  result = await User.getUserInfo({ id: v.get("query.uid") });
   result = JSON.parse(JSON.stringify(result));
 
   // 获取用户收藏夹相关信息

@@ -1,6 +1,7 @@
 const { sequelize } = require("../../core/db");
 const { Sequelize, Model } = require("sequelize");
 const { User } = require("./user");
+const { Fans } = require("./fans");
 const { NewsType } = require("./newsType");
 
 class News extends Model {
@@ -219,6 +220,27 @@ class News extends Model {
       newsItem.isLike = true;
     }
 
+    // 标注作者是否关注
+    let author = "";
+    author = newsItem ? newsItem.author : "";
+    // 查看当前用户和资讯作者是否已经建立关注关系
+    const attention = await Fans.findOne({
+      where: {
+        byFollowers: author,
+        followers: uid,
+      },
+    });
+
+    // 标记是否已建立“关注”关系
+    let isAttention = false;
+
+    if (attention && attention.isFollower) {
+      isAttention = true;
+    }
+
+    // 是否已关注
+    newsItem.User.isAttention = isAttention;
+
     return newsItem;
   }
 
@@ -290,8 +312,9 @@ class News extends Model {
   }
 
   // 获取作者发表的所有资讯
-  static async getUserNews() {
+  static async getUserNews(uid) {
     const result = await News.findAll({
+      where: { author: uid },
       include: [
         {
           model: User,

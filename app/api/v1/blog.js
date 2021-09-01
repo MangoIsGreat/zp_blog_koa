@@ -220,4 +220,58 @@ router.get("/findBlog", new Auth().m, async (ctx, next) => {
   };
 });
 
+// 搜索功能
+router.get("/search", new Auth().getUID, async (ctx, next) => {
+  let params = {};
+  let { tag, content } = ctx.query;
+
+  tag = Number(tag);
+
+  // 根据标签类型查找
+  if (tag) {
+    params["tag"] = tag;
+  }
+
+  // 如果为推荐类型：
+  if (tag === 10000) params = null;
+
+  let blogList = [];
+  // 如果为关注类型
+  if (tag === 10001) {
+    if (!ctx.auth || !ctx.auth.uid) return;
+    blogList = await Blog.getSearchAttentionBlogList(ctx.auth.uid, content);
+  } else {
+    blogList = await Blog.getSearchPageBlogList({ where: params }, content);
+  }
+
+  let records = null;
+  if (ctx.auth && ctx.auth.uid) {
+    records = await BLike.getRecord({ user: ctx.auth.uid });
+
+    records = JSON.parse(JSON.stringify(records));
+  }
+
+  blogList = JSON.parse(JSON.stringify(blogList));
+
+  for (let i = 0; i < blogList.rows.length; i++) {
+    blogList.rows[i].isLike = false;
+
+    // 当前用户是否已经点赞该博客
+    if (ctx.auth && ctx.auth.uid) {
+      for (let j = 0; j < records.rows.length; j++) {
+        if (blogList.rows[i].id === records.rows[j].blog) {
+          blogList.rows[i].isLike = true;
+        }
+      }
+    }
+  }
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: blogList,
+  };
+});
+
 module.exports = router;

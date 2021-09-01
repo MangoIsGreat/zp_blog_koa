@@ -1,5 +1,5 @@
 const { sequelize } = require("../../core/db");
-const { Sequelize, Model } = require("sequelize");
+const { Sequelize, Model, Op } = require("sequelize");
 const { User } = require("./user");
 const { Tag } = require("./tag");
 const { Fans } = require("./fans");
@@ -27,6 +27,44 @@ class Blog extends Model {
       order: [[ranking, "DESC"]],
       offset: (pageIndex * 1 - 1) * pageSize,
       limit: pageSize * 1,
+      include: [
+        {
+          model: User,
+          attributes: ["nickname"],
+        },
+        {
+          model: Tag,
+          attributes: ["tagName"],
+        },
+      ],
+      attributes: [
+        "author",
+        "blogLikeNum",
+        "blogReadNum",
+        "created_at",
+        "description",
+        "id",
+        "tag",
+        "title",
+        "titlePic",
+        "updated_at",
+        "commentNum",
+      ],
+    });
+
+    return blogs;
+  }
+
+  // 获取博客列表(搜索)
+  static async getSearchPageBlogList({ where }, content) {
+    const blogs = await Blog.findAndCountAll({
+      where: {
+        ...where,
+        title: {
+          [Op.like]: "%" + content + "%",
+        },
+      },
+      order: [["created_at", "DESC"]],
       include: [
         {
           model: User,
@@ -163,6 +201,63 @@ class Blog extends Model {
 
     return {
       count: oBlogs,
+      rows: blogs,
+    };
+  }
+
+  // 获取关注人博客(搜索)
+  static async getSearchAttentionBlogList(uid, content) {
+    let idols = await Fans.findAll({
+      where: {
+        followers: uid,
+        isFollower: true,
+      },
+    });
+
+    const blogs = [];
+    for (let i = 0; i < idols.length; i++) {
+      const blog = await Blog.findAll({
+        where: {
+          author: idols[i].byFollowers,
+          title: {
+            [Op.like]: "%" + content + "%",
+          },
+        },
+        include: [
+          {
+            model: User,
+            attributes: ["nickname", "avatar", "id"],
+          },
+          {
+            model: Tag,
+            attributes: ["tagName"],
+          },
+        ],
+        attributes: [
+          "author",
+          "blogLikeNum",
+          "blogReadNum",
+          "created_at",
+          "description",
+          "id",
+          "tag",
+          "title",
+          "titlePic",
+          "updated_at",
+          "commentNum",
+        ],
+      });
+
+      blogs.push(...blog);
+    }
+
+    // 排序
+    blogs.sort(function (a, b) {
+      return b.created_at - a.created_at;
+    });
+
+    return {
+      count: blogs.length,
       rows: blogs,
     };
   }
