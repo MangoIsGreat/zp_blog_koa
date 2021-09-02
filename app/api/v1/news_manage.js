@@ -30,7 +30,7 @@ router.get("/info", new Auth().m, async (ctx, next) => {
 });
 
 // 删除某一篇资讯
-router.post("/delete", new Auth().m, async (ctx, next) => {
+router.post("/delete", new Auth(900).m, async (ctx, next) => {
   const result = await News.deleteNews(ctx.request.body.newsId);
 
   ctx.body = {

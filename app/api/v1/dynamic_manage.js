@@ -19,7 +19,7 @@ router.get("/list", new Auth().m, async (ctx, next) => {
 });
 
 // 删除某一条动态
-router.post("/delete", new Auth().m, async (ctx, next) => {
+router.post("/delete", new Auth(900).m, async (ctx, next) => {
   const v = await new DcommentListValidator().validate(ctx);
 
   const result = await Dynamic.deleteAdminDyn(v.get("body.dynamicId"));

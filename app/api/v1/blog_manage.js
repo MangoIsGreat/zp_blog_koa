@@ -19,7 +19,7 @@ router.get("/list", new Auth().m, async (ctx, next) => {
 });
 
 // 删除博客
-router.post("/delete", new Auth().m, async (ctx, next) => {
+router.post("/delete", new Auth(900).m, async (ctx, next) => {
   const v = await new RecommendValidator().validate(ctx);
 
   const result = await Blog.deleteAdminBlog(v.get("body.id"));

@@ -116,7 +116,7 @@ router.get("/userInfo", new Auth().m, async (ctx) => {
 });
 
 // 封禁用户
-router.post("/forbid", new Auth().m, async (ctx) => {
+router.post("/forbid", new Auth(900).m, async (ctx) => {
   const result = await User.forbidUser(ctx.request.body);
 
   ctx.body = {
