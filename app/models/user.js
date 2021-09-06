@@ -18,7 +18,7 @@ class User extends Model {
       throw new global.errs.AuthFailed("密码不正确");
     }
     // 判断账号是否被禁用
-    if (!user.isForbidden) {
+    if (user.isForbidden) {
       throw new global.errs.AuthFailed("账号已经被禁用!");
     }
     return user;

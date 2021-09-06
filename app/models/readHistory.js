@@ -27,7 +27,7 @@ class ReadHistory extends Model {
     for (let i = 0; i < history.length; i++) {
       const data = await sequelize.models.Blog.getReadBlog(history[i].blogId);
 
-      result.push(data);
+      data && result.push(data);
     }
 
     return result;

@@ -75,7 +75,7 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
   // 添加是否点赞标记
   let records = null;
   if (ctx.auth && ctx.auth.uid) {
-    records = await DLike.getRecord({ user: ctx.auth.uid });
+    records = await DLike.getRecord({ user: ctx.auth.uid, isLike: true });
 
     records = JSON.parse(JSON.stringify(records));
   }

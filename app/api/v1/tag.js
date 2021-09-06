@@ -21,4 +21,18 @@ router.get("/list", async (ctx, next) => {
   };
 });
 
+// 创建分类标签
+router.post("/create", async (ctx, next) => {
+  const { type, name } = ctx.request.body;
+
+  const data = await Tag.createTag(type, name);
+
+  ctx.body = {
+    code: 200,
+    error_code: 0,
+    msg: "ok",
+    data: data,
+  };
+});
+
 module.exports = router;

@@ -10,6 +10,13 @@ class Tag extends Model {
 
     return tags;
   }
+
+  static async createTag(type, name) {
+    return Tag.create({
+      tagType: type,
+      tagName: name,
+    });
+  }
 }
 
 Tag.init(

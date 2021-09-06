@@ -71,7 +71,7 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
   // 评论点赞记录
   let records = null;
   if (ctx.auth && ctx.auth.uid) {
-    records = await CLike.getRecord({ userId: ctx.auth.uid });
+    records = await CLike.getRecord({ userId: ctx.auth.uid, isLike: true });
 
     records = JSON.parse(JSON.stringify(records));
   }
@@ -79,7 +79,7 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
   // 博客评论回复记录
   let replyRecord = null;
   if (ctx.auth && ctx.auth.uid) {
-    replyRecord = await RLike.getRecord({ userId: ctx.auth.uid });
+    replyRecord = await RLike.getRecord({ userId: ctx.auth.uid, isLike: true });
 
     replyRecord = JSON.parse(JSON.stringify(replyRecord));
   }

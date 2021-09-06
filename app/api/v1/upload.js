@@ -40,7 +40,7 @@ router.post("/upload", new Auth().m, async (ctx, next) => {
     code: 200,
     error_code: 0,
     msg: "ok",
-    url: "http://localhost:3001/" + fileName,
+    url: global.config.dev_host + fileName,
   };
 });
 

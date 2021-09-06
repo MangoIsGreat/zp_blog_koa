@@ -51,7 +51,7 @@ router.get("/list", new Auth().getUID, async (ctx, next) => {
 
   let records = null;
   if (ctx.auth && ctx.auth.uid) {
-    records = await NewsLike.getRecord({ user: ctx.auth.uid });
+    records = await NewsLike.getRecord({ user: ctx.auth.uid, isLike: true });
 
     records = JSON.parse(JSON.stringify(records));
   }
@@ -92,7 +92,7 @@ router.get("/hot", new Auth().getUID, async (ctx, next) => {
 
   let records = null;
   if (ctx.auth && ctx.auth.uid) {
-    records = await NewsLike.getRecord({ user: ctx.auth.uid });
+    records = await NewsLike.getRecord({ user: ctx.auth.uid, isLike: true });
 
     records = JSON.parse(JSON.stringify(records));
   }
@@ -134,7 +134,7 @@ router.get("/new", new Auth().getUID, async (ctx, next) => {
 
   let records = null;
   if (ctx.auth && ctx.auth.uid) {
-    records = await NewsLike.getRecord({ user: ctx.auth.uid });
+    records = await NewsLike.getRecord({ user: ctx.auth.uid, isLike: true });
 
     records = JSON.parse(JSON.stringify(records));
   }
@@ -178,7 +178,7 @@ router.get("/more", new Auth().getUID, async (ctx, next) => {
 
   let records = null;
   if (ctx.auth && ctx.auth.uid) {
-    records = await NewsLike.getRecord({ user: ctx.auth.uid });
+    records = await NewsLike.getRecord({ user: ctx.auth.uid, isLike: true });
 
     records = JSON.parse(JSON.stringify(records));
   }

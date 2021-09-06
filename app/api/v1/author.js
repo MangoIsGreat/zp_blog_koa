@@ -42,6 +42,7 @@ router.get("/ranking", new Auth().getUID, async (ctx, next) => {
         where: {
           byFollowers: result.rows[i].id,
           followers: ctx.auth.uid,
+          isFollower: true,
         },
       });
 
@@ -125,7 +126,7 @@ router.get("/artlist", new Auth().getUID, async (ctx, next) => {
 
   let records = null;
   if (ctx.auth && ctx.auth.uid) {
-    records = await BLike.getRecord({ user: ctx.auth.uid });
+    records = await BLike.getRecord({ user: ctx.auth.uid, isLike: true });
 
     records = JSON.parse(JSON.stringify(records));
   }
@@ -194,7 +195,7 @@ router.get("/dynlist", new Auth().getUID, async (ctx, next) => {
   // 添加是否点赞标记
   let records = null;
   if (ctx.auth && ctx.auth.uid) {
-    records = await DLike.getRecord({ user: ctx.auth.uid });
+    records = await DLike.getRecord({ user: ctx.auth.uid, isLike: true });
 
     records = JSON.parse(JSON.stringify(records));
   }
@@ -240,7 +241,7 @@ router.get("/likeBlog", new Auth().getUID, async (ctx, next) => {
 
   let records = null;
   if (ctx.auth && ctx.auth.uid) {
-    records = await BLike.getRecord({ user: ctx.auth.uid });
+    records = await BLike.getRecord({ user: ctx.auth.uid, isLike: true });
 
     records = JSON.parse(JSON.stringify(records));
   }
@@ -314,7 +315,7 @@ router.get("/likeDyn", new Auth().getUID, async (ctx, next) => {
   // 添加是否点赞标记
   let records = null;
   if (ctx.auth && ctx.auth.uid) {
-    records = await DLike.getRecord({ user: ctx.auth.uid });
+    records = await DLike.getRecord({ user: ctx.auth.uid, isLike: true });
 
     records = JSON.parse(JSON.stringify(records));
   }
